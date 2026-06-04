@@ -1,0 +1,32 @@
+{
+  "name": "taskproof",
+  "version": "1.0.0",
+  "description": "A Smart Project & Task Collaboration System",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "dev:frontend": "npm run dev --workspace=apps/frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nazmul1582/taskproof.git"
+  },
+  "keywords": [
+    "project-management",
+    "task-management",
+    "collaboration",
+    "monorepo",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "author": "Md. Nazmul Hasan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nazmul1582/taskproof/issues"
+  },
+  "homepage": "https://github.com/Nazmul1582/taskproof#readme"
+}
