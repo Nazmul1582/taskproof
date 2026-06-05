@@ -40,9 +40,9 @@ const login = async (req, res) => {
 
   const user = await User.findOne({ email }).select("+password");
 
-  const comparePassword = await user.comparePassword(password);
+  const isMatch = await user.comparePassword(password);
 
-  if (!user || !comparePassword) {
+  if (!user || !isMatch) {
     return res
       .status(401)
       .json({ success: false, message: "Invalid email or password" });
@@ -64,7 +64,71 @@ const login = async (req, res) => {
   });
 };
 
+const demoLogin = async (req, res) => {
+  const { role = "team_member" } = req.body;
+
+  let demoUser;
+
+  switch (role) {
+    case "admin":
+      demoUser = await User.findOne({ email: "demo-admin@example.com" });
+      if (!demoUser) {
+        demoUser = await User.create({
+          name: "Demo Admin",
+          email: "demo-admin@example.com",
+          password: "demo123",
+          role: "admin",
+        });
+      }
+      break;
+    case "project_manager":
+      demoUser = await User.findOne({ email: "demo-pm@example.com" });
+      if (!demoUser) {
+        demoUser = await User.create({
+          name: "Demo PM",
+          email: "demo-pm@example.com",
+          password: "demo123",
+          role: "project_manager",
+        });
+      }
+      break;
+    default:
+      demoUser = await User.findOne({ email: "demo-user@example.com" });
+      if (!demoUser) {
+        demoUser = await User.create({
+          name: "Demo User",
+          email: "demo-user@example.com",
+          password: "demo123",
+          role: "team_member",
+        });
+      }
+  }
+
+  const token = generateToken(demoUser._id, demoUser.role);
+
+  res.json({
+    success: true,
+    data: {
+      user: {
+        _id: demoUser._id,
+        name: demoUser.name,
+        email: demoUser.email,
+        role: demoUser.role,
+      },
+      token,
+      message: `Logged in as ${demoUser.role}`,
+    },
+  });
+};
+
+const getMe = async (req, res) => {
+  const user = await User.findById(req.user._id);
+  res.json({ success: true, data: { user } });
+};
+
 module.exports = {
   signup,
   login,
+  demoLogin,
+  getMe,
 };
