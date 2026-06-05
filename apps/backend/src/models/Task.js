@@ -1,4 +1,3 @@
-// backend/src/models/Task.js
 const mongoose = require("mongoose");
 
 const attachmentSchema = new mongoose.Schema({
