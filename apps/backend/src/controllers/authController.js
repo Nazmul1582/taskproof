@@ -39,10 +39,14 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email }).select("+password");
+  if (!user) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid email or password" });
+  }
 
   const isMatch = await user.comparePassword(password);
-
-  if (!user || !isMatch) {
+  if (!isMatch) {
     return res
       .status(401)
       .json({ success: false, message: "Invalid email or password" });
@@ -122,8 +126,7 @@ const demoLogin = async (req, res) => {
 };
 
 const getMe = async (req, res) => {
-  const user = await User.findById(req.user._id);
-  res.json({ success: true, data: { user } });
+  res.status(200).json({ success: true, data: { user: req.user } });
 };
 
 module.exports = {
