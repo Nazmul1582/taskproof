@@ -14,7 +14,7 @@ import {
   Moon,
   ChevronDown,
 } from "lucide-react";
-import NotificationBell from "../NotificationBell";
+import NotificationBell from "./NotificationBell";
 
 const SidebarLink = ({ to, icon: Icon, children }) => {
   const location = useLocation();

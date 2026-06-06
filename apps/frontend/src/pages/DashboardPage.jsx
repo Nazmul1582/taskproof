@@ -23,7 +23,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import LoadingSpinner from "../components/common/LoadingSpinner";
-import KPICard from "../components/KPICard";
+import KPICard from "../components/common/KPICard";
 
 const Dashboard = () => {
   const { data: kpis, isLoading: kpisLoading } = useQuery({
