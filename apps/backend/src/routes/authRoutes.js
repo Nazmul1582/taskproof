@@ -6,7 +6,7 @@ const {
   getMe,
 } = require("../controllers/authController");
 const { protect } = require("../middlewares/authMiddleware");
-const { validate } = require("../middlewares/validationMiddleware");
+const validate = require("../middlewares/validationMiddleware");
 const {
   signupSchema,
   loginSchema,

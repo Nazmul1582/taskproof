@@ -34,6 +34,22 @@ const getProjects = async (req, res) => {
   });
 };
 
+const createProject = async (req, res) => {
+  const { name, description, deadline, status } = req.body;
+
+  const project = await Project.create({
+    name,
+    description,
+    deadline,
+    status,
+    createdBy: req.user._id,
+    teamMembers: [req.user._id],
+  });
+
+  res.status(201).json({ success: true, data: { project } });
+};
+
 module.exports = {
   getProjects,
+  createProject,
 };
