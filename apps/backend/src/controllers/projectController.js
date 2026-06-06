@@ -34,6 +34,40 @@ const getProjects = async (req, res) => {
   });
 };
 
+// get a single project
+const getProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const project = await Project.findById(id)
+      .populate("createdBy", "name email")
+      .populate("teamMembers", "name email avatar");
+
+    if (!project) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    }
+
+    // Check access
+    const isMember = project.teamMembers.some(
+      (m) => m._id.toString() === req.user._id.toString(),
+    );
+    const isCreator =
+      project.createdBy._id.toString() === req.user._id.toString();
+
+    if (req.user.role !== "admin" && !isMember && !isCreator) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    res.status(200).json({ success: true, data: { project } });
+  } catch (error) {
+    console.error("Get project error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// create project
 const createProject = async (req, res) => {
   const { name, description, deadline, status } = req.body;
 
@@ -51,5 +85,6 @@ const createProject = async (req, res) => {
 
 module.exports = {
   getProjects,
+  getProject,
   createProject,
 };
