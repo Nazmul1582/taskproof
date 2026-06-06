@@ -1,7 +1,8 @@
+// apps/frontend/src/pages/ProjectsPage.jsx (Updated)
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "../services/api";
-import { Plus, Search, Edit2, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Eye, Filter } from "lucide-react";
 import toast from "react-hot-toast";
 import Modal from "../components/common/Modal";
 import ProjectForm from "../components/projects/ProjectForm";
@@ -18,9 +19,9 @@ const StatusBadge = ({ status }) => {
   };
   return (
     <span
-      className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status]}`}
+      className={`px-2 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium ${styles[status]}`}
     >
-      {status.replace("_", " ").toUpperCase()}
+      {status?.replace("_", " ")?.toUpperCase()}
     </span>
   );
 };
@@ -32,13 +33,21 @@ const ProjectsPage = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const queryParams = {
+    page,
+    search,
+  };
+  if (statusFilter && statusFilter !== "") {
+    queryParams.status = statusFilter;
+  }
 
   const { data, isLoading } = useQuery({
-    queryKey: ["projects", { page, search, status: statusFilter }],
+    queryKey: ["projects", queryParams],
     queryFn: () =>
-      projectService
-        .getProjects({ page, search, status: statusFilter })
-        .then((res) => res.data.data),
+      projectService.getProjects(queryParams).then((res) => res.data.data),
+    enabled: true,
   });
 
   const createMutation = useMutation({
@@ -48,8 +57,11 @@ const ProjectsPage = () => {
       toast.success("Project created successfully");
       setModalOpen(false);
     },
-    onError: (error) =>
-      toast.error(error.response?.data?.message || "Failed to create project"),
+    onError: (error) => {
+      const message =
+        error.response?.data?.message || "Failed to create project";
+      toast.error(message);
+    },
   });
 
   const updateMutation = useMutation({
@@ -60,8 +72,11 @@ const ProjectsPage = () => {
       setModalOpen(false);
       setEditingProject(null);
     },
-    onError: (error) =>
-      toast.error(error.response?.data?.message || "Failed to update project"),
+    onError: (error) => {
+      const message =
+        error.response?.data?.message || "Failed to update project";
+      toast.error(message);
+    },
   });
 
   const deleteMutation = useMutation({
@@ -70,8 +85,11 @@ const ProjectsPage = () => {
       queryClient.invalidateQueries(["projects"]);
       toast.success("Project deleted successfully");
     },
-    onError: (error) =>
-      toast.error(error.response?.data?.message || "Failed to delete project"),
+    onError: (error) => {
+      const message =
+        error.response?.data?.message || "Failed to delete project";
+      toast.error(message);
+    },
   });
 
   const handleSubmit = (data) => {
@@ -93,14 +111,21 @@ const ProjectsPage = () => {
     }
   };
 
+  const handleStatusChange = (e) => {
+    const value = e.target.value;
+    setStatusFilter(value);
+    setPage(1);
+  };
+
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Projects</h1>
-          <p className="text-gray-500 dark:text-gray-400">
+          <h1 className="text-xl sm:text-2xl font-bold">Projects</h1>
+          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1">
             Manage all your projects
           </p>
         </div>
@@ -109,59 +134,67 @@ const ProjectsPage = () => {
             setEditingProject(null);
             setModalOpen(true);
           }}
-          className="btn-primary flex items-center justify-center gap-2"
+          className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
           New Project
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search projects..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="input pl-10"
-          />
+      {/* Search and Filter Section */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="input pl-9 sm:pl-10 text-sm sm:text-base"
+            />
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="sm:hidden btn-secondary flex items-center justify-center gap-2"
+          >
+            <Filter className="w-4 h-4" />
+            Filters
+          </button>
+          <select
+            value={statusFilter}
+            onChange={handleStatusChange}
+            className={`input w-full sm:w-48 text-sm sm:text-base ${showFilters ? "block" : "hidden sm:block"}`}
+          >
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="on_hold">On Hold</option>
+          </select>
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => {
-            setStatusFilter(e.target.value);
-            setPage(1);
-          }}
-          className="input w-full sm:w-48"
-        >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="completed">Completed</option>
-          <option value="on_hold">On Hold</option>
-        </select>
       </div>
 
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {data?.projects?.map((project) => (
           <div
             key={project._id}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5 md:p-6 hover:shadow-md transition-shadow"
           >
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="text-lg font-semibold">{project.name}</h3>
+            <div className="flex items-start justify-between gap-2 mb-3">
+              <h3 className="text-base sm:text-lg font-semibold break-words flex-1">
+                {project.name}
+              </h3>
               <StatusBadge status={project.status} />
             </div>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
               {project.description}
             </p>
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center justify-between text-sm">
+            <div className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="text-gray-500">Deadline:</span>
                 <span
                   className={
@@ -173,32 +206,32 @@ const ProjectsPage = () => {
                   {new Date(project.deadline).toLocaleDateString()}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="text-gray-500">Team Members:</span>
                 <span>{project.teamMembers?.length || 0}</span>
               </div>
             </div>
-            <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex gap-2 pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700">
               <button
                 onClick={() =>
                   (window.location.href = `/projects/${project._id}`)
                 }
-                className="flex-1 btn-secondary flex items-center justify-center gap-1 text-sm"
+                className="flex-1 btn-secondary flex items-center justify-center gap-1 text-xs sm:text-sm py-1.5 sm:py-2"
               >
-                <Eye className="w-4 h-4" />
+                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                 View
               </button>
               <button
                 onClick={() => handleEdit(project)}
-                className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
+                className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
               >
-                <Edit2 className="w-4 h-4" />
+                <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
                 onClick={() => handleDelete(project._id)}
-                className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
