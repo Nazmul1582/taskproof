@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { taskService } from "../services/api";
-import { Search, Filter, X, ChevronDown, ChevronUp } from "lucide-react";
+import { taskService, projectService } from "../services/api";
+import { Search, Filter, X, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 import TaskCard from "../components/tasks/TaskCard";
+import TaskForm from "../components/tasks/TaskForm";
+import Modal from "../components/common/Modal";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 
 const TasksPage = () => {
@@ -12,24 +14,63 @@ const TasksPage = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
+  const [projectFilter, setProjectFilter] = useState("");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
   const [showFilters, setShowFilters] = useState(false);
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+
+  // Fetch projects for the project filter dropdown
+  const { data: projectsData } = useQuery({
+    queryKey: ["projects-for-filter"],
+    queryFn: () =>
+      projectService.getProjects({ limit: 100 }).then((res) => res.data.data),
+  });
+
+  // Build query params - only include filters that have values
+  const queryParams = {
+    page,
+    search: search || undefined,
+  };
+  if (statusFilter && statusFilter !== "") queryParams.status = statusFilter;
+  if (priorityFilter && priorityFilter !== "")
+    queryParams.priority = priorityFilter;
+  if (projectFilter && projectFilter !== "")
+    queryParams.projectId = projectFilter;
 
   const { data, isLoading } = useQuery({
-    queryKey: [
-      "tasks",
-      { page, search, status: statusFilter, priority: priorityFilter },
-    ],
+    queryKey: ["tasks", queryParams],
     queryFn: () =>
-      taskService
-        .getTasks({
-          page,
-          search,
-          status: statusFilter,
-          priority: priorityFilter,
-        })
-        .then((res) => res.data.data),
+      taskService.getTasks(queryParams).then((res) => res.data.data),
+    enabled: true,
+  });
+
+  const createTaskMutation = useMutation({
+    mutationFn: (data) => taskService.createTask(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["tasks"]);
+      toast.success("Task created successfully");
+      setTaskModalOpen(false);
+    },
+    onError: (error) => {
+      const message = error.response?.data?.message || "Failed to create task";
+      toast.error(message);
+    },
+  });
+
+  const updateTaskMutation = useMutation({
+    mutationFn: ({ id, data }) => taskService.updateTask(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["tasks"]);
+      toast.success("Task updated successfully");
+      setTaskModalOpen(false);
+      setEditingTask(null);
+    },
+    onError: (error) => {
+      const message = error.response?.data?.message || "Failed to update task";
+      toast.error(message);
+    },
   });
 
   const updateStatusMutation = useMutation({
@@ -41,6 +82,34 @@ const TasksPage = () => {
     onError: (error) =>
       toast.error(error.response?.data?.message || "Failed to update status"),
   });
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: (id) => taskService.deleteTask(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["tasks"]);
+      toast.success("Task deleted successfully");
+    },
+    onError: (error) =>
+      toast.error(error.response?.data?.message || "Failed to delete task"),
+  });
+
+  const handleTaskSubmit = (taskData) => {
+    if (editingTask) {
+      updateTaskMutation.mutate({ id: editingTask._id, data: taskData });
+    } else {
+      createTaskMutation.mutate(taskData);
+    }
+  };
+
+  const handleStatusChange = (taskId, status) => {
+    updateStatusMutation.mutate({ id: taskId, status });
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      deleteTaskMutation.mutate(taskId);
+    }
+  };
 
   const getSortedTasks = () => {
     if (!data?.tasks) return [];
@@ -62,14 +131,11 @@ const TasksPage = () => {
     });
   };
 
-  const handleStatusChange = (taskId, status) => {
-    updateStatusMutation.mutate({ id: taskId, status });
-  };
-
   const clearFilters = () => {
     setSearch("");
     setStatusFilter("");
     setPriorityFilter("");
+    setProjectFilter("");
     setSortBy("createdAt");
     setSortOrder("desc");
     setPage(1);
@@ -79,6 +145,7 @@ const TasksPage = () => {
     search ||
     statusFilter ||
     priorityFilter ||
+    projectFilter ||
     sortBy !== "createdAt" ||
     sortOrder !== "desc";
 
@@ -95,129 +162,176 @@ const TasksPage = () => {
           </p>
         </div>
         <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="sm:hidden btn-secondary flex items-center justify-center gap-2 text-sm py-2"
+          onClick={() => {
+            setEditingTask(null);
+            setTaskModalOpen(true);
+          }}
+          className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5"
         >
-          <Filter className="w-4 h-4" />
-          {showFilters ? "Hide Filters" : "Show Filters"}
-          {hasActiveFilters && (
-            <span className="ml-1 w-2 h-2 bg-primary-600 rounded-full"></span>
-          )}
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+          Add Task
         </button>
       </div>
 
       {/* Search and Filters */}
-      <div className={`space-y-3 ${showFilters ? "block" : "hidden sm:block"}`}>
+      <div className="space-y-3">
         <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search tasks by title or description..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              className="input pl-9 text-sm sm:text-base"
-            />
-          </div>
-
-          {/* Status Filter */}
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
-            className="input w-full sm:w-36 text-sm sm:text-base"
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="sm:hidden btn-secondary flex items-center justify-center gap-2"
           >
-            <option value="">All Status</option>
-            <option value="todo">To Do</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
-
-          {/* Priority Filter */}
-          <select
-            value={priorityFilter}
-            onChange={(e) => {
-              setPriorityFilter(e.target.value);
-              setPage(1);
-            }}
-            className="input w-full sm:w-36 text-sm sm:text-base"
-          >
-            <option value="">All Priority</option>
-            <option value="high">High 🔴</option>
-            <option value="medium">Medium 🟡</option>
-            <option value="low">Low 🟢</option>
-          </select>
-
-          {/* Sort By */}
-          <select
-            value={`${sortBy}-${sortOrder}`}
-            onChange={(e) => {
-              const [newSortBy, newSortOrder] = e.target.value.split("-");
-              setSortBy(newSortBy);
-              setSortOrder(newSortOrder);
-            }}
-            className="input w-full sm:w-44 text-sm sm:text-base"
-          >
-            <option value="createdAt-desc">Latest Created</option>
-            <option value="createdAt-asc">Oldest Created</option>
-            <option value="dueDate-asc">Nearest Deadline</option>
-            <option value="dueDate-desc">Farthest Deadline</option>
-            <option value="priority-desc">Highest Priority</option>
-            <option value="priority-asc">Lowest Priority</option>
-          </select>
+            <Filter className="w-4 h-4" />
+            {showFilters ? "Hide Filters" : "Show Filters"}
+            {hasActiveFilters && (
+              <span className="ml-1 w-2 h-2 bg-primary-600 rounded-full"></span>
+            )}
+          </button>
         </div>
 
-        {/* Active Filters Display */}
-        {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 pt-2">
-            <span className="text-xs text-gray-500">Active filters:</span>
-            {search && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
-                Search: "{search}"
-                <button
-                  onClick={() => setSearch("")}
-                  className="hover:text-red-500"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-            {statusFilter && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
-                Status: {statusFilter.replace("_", " ")}
-                <button
-                  onClick={() => setStatusFilter("")}
-                  className="hover:text-red-500"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-            {priorityFilter && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
-                Priority: {priorityFilter}
-                <button
-                  onClick={() => setPriorityFilter("")}
-                  className="hover:text-red-500"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-            <button
-              onClick={clearFilters}
-              className="text-xs text-primary-600 hover:underline"
+        <div
+          className={`space-y-3 ${showFilters ? "block" : "hidden sm:block"}`}
+        >
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Search */}
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search tasks by title or description..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                className="input pl-9 text-sm sm:text-base"
+              />
+            </div>
+
+            {/* Project Filter */}
+            <select
+              value={projectFilter}
+              onChange={(e) => {
+                setProjectFilter(e.target.value);
+                setPage(1);
+              }}
+              className="input w-full sm:w-40 text-sm sm:text-base"
             >
-              Clear all
-            </button>
+              <option value="">All Projects</option>
+              {projectsData?.projects?.map((project) => (
+                <option key={project._id} value={project._id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(1);
+              }}
+              className="input w-full sm:w-36 text-sm sm:text-base"
+            >
+              <option value="">All Status</option>
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+
+            {/* Priority Filter */}
+            <select
+              value={priorityFilter}
+              onChange={(e) => {
+                setPriorityFilter(e.target.value);
+                setPage(1);
+              }}
+              className="input w-full sm:w-36 text-sm sm:text-base"
+            >
+              <option value="">All Priority</option>
+              <option value="high">High 🔴</option>
+              <option value="medium">Medium 🟡</option>
+              <option value="low">Low 🟢</option>
+            </select>
+
+            {/* Sort By */}
+            <select
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [newSortBy, newSortOrder] = e.target.value.split("-");
+                setSortBy(newSortBy);
+                setSortOrder(newSortOrder);
+              }}
+              className="input w-full sm:w-44 text-sm sm:text-base"
+            >
+              <option value="createdAt-desc">Latest Created</option>
+              <option value="createdAt-asc">Oldest Created</option>
+              <option value="dueDate-asc">Nearest Deadline</option>
+              <option value="dueDate-desc">Farthest Deadline</option>
+              <option value="priority-desc">Highest Priority</option>
+              <option value="priority-asc">Lowest Priority</option>
+            </select>
           </div>
-        )}
+
+          {/* Active Filters Display */}
+          {hasActiveFilters && (
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              <span className="text-xs text-gray-500">Active filters:</span>
+              {search && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
+                  Search: "{search}"
+                  <button
+                    onClick={() => setSearch("")}
+                    className="hover:text-red-500"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              {projectFilter && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
+                  Project:{" "}
+                  {projectsData?.projects?.find((p) => p._id === projectFilter)
+                    ?.name || projectFilter}
+                  <button
+                    onClick={() => setProjectFilter("")}
+                    className="hover:text-red-500"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              {statusFilter && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
+                  Status: {statusFilter.replace("_", " ")}
+                  <button
+                    onClick={() => setStatusFilter("")}
+                    className="hover:text-red-500"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              {priorityFilter && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
+                  Priority: {priorityFilter}
+                  <button
+                    onClick={() => setPriorityFilter("")}
+                    className="hover:text-red-500"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              <button
+                onClick={clearFilters}
+                className="text-xs text-primary-600 hover:underline"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Results Count */}
@@ -232,20 +346,11 @@ const TasksPage = () => {
             <TaskCard
               key={task._id}
               task={task}
-              onEdit={() => (window.location.href = `/tasks/${task._id}`)}
-              onDelete={async (id) => {
-                if (window.confirm("Delete this task?")) {
-                  try {
-                    await taskService.deleteTask(id);
-                    queryClient.invalidateQueries(["tasks"]);
-                    toast.success("Task deleted successfully");
-                  } catch (error) {
-                    toast.error(
-                      error.response?.data?.message || "Failed to delete task",
-                    );
-                  }
-                }
+              onEdit={() => {
+                setEditingTask(task);
+                setTaskModalOpen(true);
               }}
+              onDelete={handleDeleteTask}
               onStatusChange={handleStatusChange}
               isUpdatingStatus={updateStatusMutation.isPending}
             />
@@ -265,13 +370,51 @@ const TasksPage = () => {
                 </button>
               </>
             ) : (
-              <p className="text-gray-500">
-                No tasks found. Create your first task from a project!
-              </p>
+              <>
+                <p className="text-gray-500 mb-4">
+                  No tasks found. Create your first task!
+                </p>
+                <button
+                  onClick={() => {
+                    setEditingTask(null);
+                    setTaskModalOpen(true);
+                  }}
+                  className="btn-primary inline-flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Task
+                </button>
+              </>
             )}
           </div>
         )}
       </div>
+
+      {/* Add/Edit Task Modal */}
+      <Modal
+        isOpen={taskModalOpen}
+        onClose={() => {
+          setTaskModalOpen(false);
+          setEditingTask(null);
+        }}
+        title={editingTask ? "Edit Task" : "Create New Task"}
+      >
+        <TaskForm
+          initialData={editingTask}
+          projectId={
+            editingTask?.projectId?._id || editingTask?.projectId || ""
+          }
+          teamMembers={[]} // Will be populated when project is selected
+          onSubmit={handleTaskSubmit}
+          onCancel={() => {
+            setTaskModalOpen(false);
+            setEditingTask(null);
+          }}
+          isLoading={
+            createTaskMutation.isPending || updateTaskMutation.isPending
+          }
+        />
+      </Modal>
     </div>
   );
 };

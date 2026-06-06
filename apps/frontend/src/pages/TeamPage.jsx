@@ -1,4 +1,3 @@
-// apps/frontend/src/pages/TeamPage.jsx
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "../services/api";

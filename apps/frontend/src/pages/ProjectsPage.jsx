@@ -1,4 +1,3 @@
-// apps/frontend/src/pages/ProjectsPage.jsx (Updated)
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "../services/api";
