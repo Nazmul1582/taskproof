@@ -1,9 +1,10 @@
 const {
-  registerUserSchema,
-  loginUserSchema,
-  updateUserSchema,
-  userIdParamSchema,
-} = require("./userValidation");
+  signupSchema,
+  loginSchema,
+  demoLoginSchema,
+} = require("./authValidation");
+
+const { updateUserSchema, userIdParamSchema } = require("./userValidation");
 
 const {
   createProjectSchema,
@@ -22,12 +23,6 @@ const {
   createCommentSchema,
 } = require("./taskValidation");
 
-const {
-  signupSchema,
-  loginSchema,
-  demoLoginSchema,
-} = require("./authValidation");
-
 module.exports = {
   // Auth validations
   signupSchema,
@@ -35,8 +30,6 @@ module.exports = {
   demoLoginSchema,
 
   // User validations
-  registerUserSchema,
-  loginUserSchema,
   updateUserSchema,
   userIdParamSchema,
 

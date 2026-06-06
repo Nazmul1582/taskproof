@@ -6,6 +6,8 @@ const {
   updateTask,
   deleteTask,
   updateTaskStatus,
+  addComment,
+  deleteComment,
 } = require("../controllers/taskController");
 const { protect, adminOrPM } = require("../middlewares/authMiddleware");
 const validate = require("../middlewares/validationMiddleware");
@@ -44,5 +46,14 @@ router.patch(
   validate(updateTaskStatusSchema),
   updateTaskStatus,
 );
+
+router.post(
+  "/:taskId/comments",
+  protect,
+  validate(createCommentSchema),
+  addComment,
+);
+
+router.delete("/:taskId/comments/:commentId", protect, deleteComment);
 
 module.exports = router;

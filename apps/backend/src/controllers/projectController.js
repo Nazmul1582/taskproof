@@ -1,40 +1,80 @@
 const Project = require("../models/Project");
+const Task = require("../models/Task");
+const ActivityLog = require("../models/ActivityLog");
+const Notification = require("../models/Notification");
 
 const getProjects = async (req, res) => {
-  const { status, search, page = 1, limit = 10 } = req.query;
-  let query = {};
+  try {
+    const { status, search, page = 1, limit = 10 } = req.query;
 
-  // Role-based filtering
-  if (req.user.role === "team_member") {
-    query.teamMembers = req.user._id;
+    let query = {};
+
+    if (req.user.role === "team_member") {
+      query.teamMembers = req.user._id;
+    }
+
+    if (status) query.status = status;
+    if (search) query.name = { $regex: search, $options: "i" };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const projects = await Project.find(query)
+      .populate("createdBy", "name email")
+      .populate("teamMembers", "name email avatar")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Project.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: {
+        projects,
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / parseInt(limit)),
+      },
+    });
+  } catch (error) {
+    console.error("Get projects error:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
-
-  if (status) query.status = status;
-  if (search) query.name = { $regex: search, $options: "i" };
-
-  const skip = (page - 1) * limit;
-
-  const projects = await Project.find(query)
-    .populate("createdBy", "name email")
-    .populate("teamMembers", "name email avatar")
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(parseInt(limit));
-
-  const total = await Project.countDocuments(query);
-
-  res.status(200).json({
-    success: true,
-    data: {
-      projects,
-      total,
-      page: parseInt(page),
-      pages: Math.ceil(total / limit),
-    },
-  });
 };
 
-// get a single project
+const createProject = async (req, res) => {
+  try {
+    const { name, description, deadline, status } = req.body;
+
+    const project = await Project.create({
+      name,
+      description,
+      deadline,
+      status: status || "active",
+      createdBy: req.user._id,
+      teamMembers: [req.user._id],
+    });
+
+    await ActivityLog.create({
+      action: `Project "${name}" created`,
+      user: req.user._id,
+      userName: req.user.name,
+      targetType: "project",
+      targetId: project._id,
+    });
+
+    res.status(201).json({ success: true, data: { project } });
+  } catch (error) {
+    console.error("Create project error:", error);
+    if (error.code === 11000) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Project name already exists" });
+    }
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const getProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -49,7 +89,6 @@ const getProject = async (req, res) => {
         .json({ success: false, message: "Project not found" });
     }
 
-    // Check access
     const isMember = project.teamMembers.some(
       (m) => m._id.toString() === req.user._id.toString(),
     );
@@ -60,30 +99,17 @@ const getProject = async (req, res) => {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
-    res.status(200).json({ success: true, data: { project } });
+    const tasks = await Task.find({ projectId: project._id })
+      .populate("assignedTo", "name email avatar")
+      .populate("createdBy", "name");
+
+    res.status(200).json({ success: true, data: { project, tasks } });
   } catch (error) {
     console.error("Get project error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// create project
-const createProject = async (req, res) => {
-  const { name, description, deadline, status } = req.body;
-
-  const project = await Project.create({
-    name,
-    description,
-    deadline,
-    status,
-    createdBy: req.user._id,
-    teamMembers: [req.user._id],
-  });
-
-  res.status(201).json({ success: true, data: { project } });
-};
-
-// update project
 const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -97,7 +123,6 @@ const updateProject = async (req, res) => {
         .json({ success: false, message: "Project not found" });
     }
 
-    // Check permission
     if (
       req.user.role !== "admin" &&
       project.createdBy.toString() !== req.user._id.toString()
@@ -110,14 +135,21 @@ const updateProject = async (req, res) => {
       runValidators: true,
     });
 
-    res.json({ success: true, data: { project } });
+    await ActivityLog.create({
+      action: `Project "${project.name}" updated`,
+      user: req.user._id,
+      userName: req.user.name,
+      targetType: "project",
+      targetId: project._id,
+    });
+
+    res.status(200).json({ success: true, data: { project } });
   } catch (error) {
     console.error("Update project error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// delete project
 const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -137,7 +169,16 @@ const deleteProject = async (req, res) => {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
+    await Task.deleteMany({ projectId: project._id });
     await project.deleteOne();
+
+    await ActivityLog.create({
+      action: `Project "${project.name}" deleted`,
+      user: req.user._id,
+      userName: req.user.name,
+      targetType: "project",
+      targetId: project._id,
+    });
 
     res
       .status(200)
@@ -148,7 +189,6 @@ const deleteProject = async (req, res) => {
   }
 };
 
-// Add team member to project
 const addTeamMember = async (req, res) => {
   try {
     const { id } = req.params;
@@ -172,6 +212,22 @@ const addTeamMember = async (req, res) => {
     if (!project.teamMembers.includes(userId)) {
       project.teamMembers.push(userId);
       await project.save();
+
+      await Notification.create({
+        userId: userId,
+        title: "Added to Project",
+        message: `You have been added to project "${project.name}"`,
+        type: "member_added",
+        relatedId: project._id,
+      });
+
+      await ActivityLog.create({
+        action: `Added member to project "${project.name}"`,
+        user: req.user._id,
+        userName: req.user.name,
+        targetType: "member",
+        targetId: userId,
+      });
     }
 
     res.status(200).json({ success: true, data: { project } });
@@ -181,7 +237,6 @@ const addTeamMember = async (req, res) => {
   }
 };
 
-// Remove team member from project
 const removeTeamMember = async (req, res) => {
   try {
     const { id, userId } = req.params;
@@ -206,7 +261,7 @@ const removeTeamMember = async (req, res) => {
     );
     await project.save();
 
-    res.json({ success: true, data: { project } });
+    res.status(200).json({ success: true, data: { project } });
   } catch (error) {
     console.error("Remove team member error:", error);
     res.status(500).json({ success: false, message: error.message });

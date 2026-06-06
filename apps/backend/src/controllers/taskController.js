@@ -1,7 +1,8 @@
 const Task = require("../models/Task");
 const Project = require("../models/Project");
+const ActivityLog = require("../models/ActivityLog");
+const Notification = require("../models/Notification");
 
-// Get all tasks
 const getTasks = async (req, res) => {
   try {
     const {
@@ -21,7 +22,6 @@ const getTasks = async (req, res) => {
     if (priority) query.priority = priority;
     if (assignedTo) query.assignedTo = assignedTo;
 
-    // Team members can only see their own tasks unless specified
     if (req.user.role === "team_member" && !assignedTo) {
       query.assignedTo = req.user._id;
     }
@@ -60,13 +60,11 @@ const getTasks = async (req, res) => {
   }
 };
 
-// Create task
 const createTask = async (req, res) => {
   try {
     const { title, description, projectId, assignedTo, dueDate, priority } =
       req.body;
 
-    // Check if project exists
     const project = await Project.findById(projectId);
     if (!project) {
       return res
@@ -74,7 +72,6 @@ const createTask = async (req, res) => {
         .json({ success: false, message: "Project not found" });
     }
 
-    // Check if assignedTo is a team member
     if (
       req.user.role === "team_member" &&
       !project.teamMembers.includes(assignedTo)
@@ -85,7 +82,6 @@ const createTask = async (req, res) => {
       });
     }
 
-    // Check for duplicate task title in same project
     const existingTask = await Task.findOne({ title, projectId });
     if (existingTask) {
       return res.status(400).json({
@@ -104,26 +100,37 @@ const createTask = async (req, res) => {
       createdBy: req.user._id,
     });
 
-    // Populate assignedTo details
     await task.populate("assignedTo", "name email");
+
+    await Notification.create({
+      userId: assignedTo,
+      title: "New Task Assigned",
+      message: `You have been assigned task "${title}" in project "${project.name}"`,
+      type: "task_assigned",
+      relatedId: task._id,
+    });
+
+    await ActivityLog.create({
+      action: `Task "${title}" assigned to ${task.assignedTo.name}`,
+      user: req.user._id,
+      userName: req.user.name,
+      targetType: "task",
+      targetId: task._id,
+    });
 
     res.status(201).json({ success: true, data: { task } });
   } catch (error) {
     console.error("Create task error:", error);
-
-    // Handle duplicate key error
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
         message: "This task already exists in the project.",
       });
     }
-
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Get single task
 const getTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -139,7 +146,6 @@ const getTask = async (req, res) => {
         .json({ success: false, message: "Task not found" });
     }
 
-    // Check access
     const isAssigned =
       task.assignedTo._id.toString() === req.user._id.toString();
     const isCreator = task.createdBy._id.toString() === req.user._id.toString();
@@ -155,7 +161,6 @@ const getTask = async (req, res) => {
   }
 };
 
-// Update task
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -169,7 +174,6 @@ const updateTask = async (req, res) => {
         .json({ success: false, message: "Task not found" });
     }
 
-    // Check if trying to reassign a completed task
     if (
       task.status === "completed" &&
       updateData.assignedTo &&
@@ -181,7 +185,6 @@ const updateTask = async (req, res) => {
       });
     }
 
-    // Check permission
     const canEdit =
       req.user.role === "admin" ||
       task.createdBy.toString() === req.user._id.toString();
@@ -190,7 +193,6 @@ const updateTask = async (req, res) => {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
-    // Check for duplicate title if title is being changed
     if (updateData.title && updateData.title !== task.title) {
       const existingTask = await Task.findOne({
         title: updateData.title,
@@ -210,6 +212,14 @@ const updateTask = async (req, res) => {
       runValidators: true,
     });
 
+    await ActivityLog.create({
+      action: `Task "${task.title}" updated`,
+      user: req.user._id,
+      userName: req.user.name,
+      targetType: "task",
+      targetId: task._id,
+    });
+
     res.status(200).json({ success: true, data: { task } });
   } catch (error) {
     console.error("Update task error:", error);
@@ -217,7 +227,6 @@ const updateTask = async (req, res) => {
   }
 };
 
-// Delete task
 const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -237,7 +246,16 @@ const deleteTask = async (req, res) => {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
+    const taskTitle = task.title;
     await task.deleteOne();
+
+    await ActivityLog.create({
+      action: `Task "${taskTitle}" deleted`,
+      user: req.user._id,
+      userName: req.user.name,
+      targetType: "task",
+      targetId: id,
+    });
 
     res
       .status(200)
@@ -248,7 +266,6 @@ const deleteTask = async (req, res) => {
   }
 };
 
-// Update task status
 const updateTaskStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -262,7 +279,6 @@ const updateTaskStatus = async (req, res) => {
         .json({ success: false, message: "Task not found" });
     }
 
-    // Check permission - team members can only update status of assigned tasks
     const isAssigned = task.assignedTo.toString() === req.user._id.toString();
 
     if (req.user.role === "team_member" && !isAssigned) {
@@ -272,11 +288,108 @@ const updateTaskStatus = async (req, res) => {
       });
     }
 
+    task.status = status;
     await task.save();
+
+    if (status === "completed") {
+      await Notification.create({
+        userId: task.createdBy,
+        title: "Task Completed",
+        message: `Task "${task.title}" has been marked as completed`,
+        type: "task_completed",
+        relatedId: task._id,
+      });
+    }
+
+    await ActivityLog.create({
+      action: `Task "${task.title}" status changed to ${status}`,
+      user: req.user._id,
+      userName: req.user.name,
+      targetType: "task",
+      targetId: task._id,
+    });
 
     res.status(200).json({ success: true, data: { task } });
   } catch (error) {
     console.error("Update task status error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const addComment = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const { text } = req.body;
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
+    }
+
+    const isAssigned = task.assignedTo.toString() === req.user._id.toString();
+    const isCreator = task.createdBy.toString() === req.user._id.toString();
+
+    if (req.user.role !== "admin" && !isAssigned && !isCreator) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    const comment = {
+      userId: req.user._id,
+      userName: req.user.name,
+      text: text,
+      createdAt: new Date(),
+    };
+
+    task.comments.push(comment);
+    await task.save();
+
+    res.status(201).json({
+      success: true,
+      data: { comment: task.comments[task.comments.length - 1] },
+    });
+  } catch (error) {
+    console.error("Add comment error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const deleteComment = async (req, res) => {
+  try {
+    const { taskId, commentId } = req.params;
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
+    }
+
+    const comment = task.comments.id(commentId);
+
+    if (!comment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Comment not found" });
+    }
+
+    const isAuthor = comment.userId.toString() === req.user._id.toString();
+
+    if (req.user.role !== "admin" && !isAuthor) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    comment.deleteOne();
+    await task.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Comment deleted successfully" });
+  } catch (error) {
+    console.error("Delete comment error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -288,4 +401,6 @@ module.exports = {
   updateTask,
   deleteTask,
   updateTaskStatus,
+  addComment,
+  deleteComment,
 };
