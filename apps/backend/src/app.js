@@ -14,9 +14,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Error handling middleware
-app.use(errorMiddleware);
-
 // Routes
 app.use("/api/auth", authRoutes);
 
@@ -36,5 +33,8 @@ app.use("/*path", (req, res) => {
     message: `Route ${req.originalUrl} not found`,
   });
 });
+
+// Error handling middleware
+app.use(errorMiddleware);
 
 module.exports = app;
