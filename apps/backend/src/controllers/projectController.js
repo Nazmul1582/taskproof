@@ -1,7 +1,7 @@
 const Project = require("../models/Project");
 
 const getProjects = async (req, res) => {
-  const { satus, search, page = 1, limit = 10 } = req.query;
+  const { status, search, page = 1, limit = 10 } = req.query;
   let query = {};
 
   // Role-based filtering
@@ -32,4 +32,8 @@ const getProjects = async (req, res) => {
       pages: Math.ceil(total / limit),
     },
   });
+};
+
+module.exports = {
+  getProjects,
 };
