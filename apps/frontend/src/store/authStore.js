@@ -19,7 +19,6 @@ const useAuthStore = create(
         }),
 
       logout: () => {
-        authService.logout();
         set({
           user: null,
           token: null,
