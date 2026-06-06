@@ -83,8 +83,142 @@ const createProject = async (req, res) => {
   res.status(201).json({ success: true, data: { project } });
 };
 
+// update project
+const updateProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    let project = await Project.findById(id);
+
+    if (!project) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    }
+
+    // Check permission
+    if (
+      req.user.role !== "admin" &&
+      project.createdBy.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    project = await Project.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.json({ success: true, data: { project } });
+  } catch (error) {
+    console.error("Update project error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// delete project
+const deleteProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const project = await Project.findById(id);
+
+    if (!project) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    }
+
+    if (
+      req.user.role !== "admin" &&
+      project.createdBy.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    await project.deleteOne();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Project deleted successfully" });
+  } catch (error) {
+    console.error("Delete project error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Add team member to project
+const addTeamMember = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const project = await Project.findById(id);
+
+    if (!project) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    }
+
+    if (
+      req.user.role !== "admin" &&
+      project.createdBy.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    if (!project.teamMembers.includes(userId)) {
+      project.teamMembers.push(userId);
+      await project.save();
+    }
+
+    res.status(200).json({ success: true, data: { project } });
+  } catch (error) {
+    console.error("Add team member error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Remove team member from project
+const removeTeamMember = async (req, res) => {
+  try {
+    const { id, userId } = req.params;
+
+    const project = await Project.findById(id);
+
+    if (!project) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    }
+
+    if (
+      req.user.role !== "admin" &&
+      project.createdBy.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    project.teamMembers = project.teamMembers.filter(
+      (m) => m.toString() !== userId,
+    );
+    await project.save();
+
+    res.json({ success: true, data: { project } });
+  } catch (error) {
+    console.error("Remove team member error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getProjects,
-  getProject,
   createProject,
+  getProject,
+  updateProject,
+  deleteProject,
+  addTeamMember,
+  removeTeamMember,
 };
