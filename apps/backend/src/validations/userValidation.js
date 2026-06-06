@@ -39,8 +39,14 @@ const updateUserSchema = z.object({
   role: z.enum(["admin", "project_manager", "team_member"]).optional(),
 });
 
+// User ID param validation
+const userIdParamSchema = z.object({
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid user ID format"),
+});
+
 module.exports = {
   registerUserSchema,
   loginUserSchema,
   updateUserSchema,
+  userIdParamSchema,
 };

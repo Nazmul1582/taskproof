@@ -6,12 +6,18 @@ const {
   getMe,
 } = require("../controllers/authController");
 const { protect } = require("../middlewares/authMiddleware");
+const { validate } = require("../middlewares/validationMiddleware");
+const {
+  signupSchema,
+  loginSchema,
+  demoLoginSchema,
+} = require("../validations");
 
 const router = express.Router();
 
-router.post("/signup", signup);
-router.post("/login", login);
-router.post("/demo", demoLogin);
+router.post("/signup", validate(signupSchema), signup);
+router.post("/login", validate(loginSchema), login);
+router.post("/demo", validate(demoLoginSchema), demoLogin);
 router.get("/me", protect, getMe);
 
 module.exports = router;
