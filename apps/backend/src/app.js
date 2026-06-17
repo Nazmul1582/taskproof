@@ -4,6 +4,12 @@ const path = require("path");
 const dotenv = require("dotenv");
 dotenv.config();
 
+const dns = require("dns");
+if (process.env.NODE_ENV === "development") {
+  // FORCE NODE TO USE GOOGLE DNS DIRECTLY IN DEVELOPMENT
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+}
+
 const app = express();
 
 // Import routes
