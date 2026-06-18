@@ -78,12 +78,14 @@ const Layout = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Mobile Menu Button */}
-      <button
-        onClick={toggleSidebar}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
-      >
-        <Menu className="w-5 h-5" />
-      </button>
+      {!sidebarOpen && (
+        <button
+          onClick={toggleSidebar}
+          className="lg:hidden fixed top-3.5 left-6 z-50 p-1.5 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+      )}
 
       {/* Overlay */}
       {sidebarOpen && (
@@ -101,7 +103,7 @@ const Layout = () => {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-200 dark:border-gray-700">
+          <div className="h-15.25 flex items-center justify-between p-4 sm:p-5 border-b border-gray-200 dark:border-gray-700">
             <Link
               to="/dashboard"
               className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-500"
@@ -110,7 +112,7 @@ const Layout = () => {
             </Link>
             <button
               onClick={toggleSidebar}
-              className="lg:hidden p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="lg:hidden p-1.5 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700"
             >
               <X className="w-5 h-5" />
             </button>
@@ -172,9 +174,7 @@ const Layout = () => {
       </aside>
 
       {/* Main Content */}
-      <div
-        className={`lg:ml-72 transition-all duration-300 ${sidebarOpen ? "ml-0" : "-ml-64 lg:ml-72"}`}
-      >
+      <div className={"lg:ml-72 transition-all duration-300"}>
         {/* Header */}
         <header className="sticky top-0 z-30 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between px-4 sm:px-6 py-3">
