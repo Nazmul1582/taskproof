@@ -119,7 +119,9 @@ const TaskForm = ({
           placeholder="Enter task title"
         />
         {errors.title && (
-          <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
+            {errors.title.message}
+          </p>
         )}
       </div>
 
@@ -132,7 +134,7 @@ const TaskForm = ({
           placeholder="Enter task description"
         />
         {errors.description && (
-          <p className="text-red-500 text-sm mt-1">
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
             {errors.description.message}
           </p>
         )}
@@ -156,7 +158,7 @@ const TaskForm = ({
           ))}
         </select>
         {errors.projectId && (
-          <p className="text-red-500 text-sm mt-1">
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
             {errors.projectId.message}
           </p>
         )}
@@ -187,7 +189,7 @@ const TaskForm = ({
           </select>
         )}
         {errors.assignedTo && (
-          <p className="text-red-500 text-sm mt-1">
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
             {errors.assignedTo.message}
           </p>
         )}
@@ -207,7 +209,9 @@ const TaskForm = ({
           min={new Date().toISOString().split("T")[0]}
         />
         {errors.dueDate && (
-          <p className="text-red-500 text-sm mt-1">{errors.dueDate.message}</p>
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
+            {errors.dueDate.message}
+          </p>
         )}
       </div>
 

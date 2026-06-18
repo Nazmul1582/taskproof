@@ -27,8 +27,8 @@ const SidebarLink = ({ to, icon: Icon, children, onClick }) => {
       onClick={onClick}
       className={`flex items-center gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg transition-colors text-sm sm:text-base ${
         isActive
-          ? "bg-primary-50 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400"
-          : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+          ? "btn-primary"
+          : "text-gray-600 hover:text-primary-600 dark:text-gray-400 hover:bg-primary-50 dark:hover:text-primary-400 dark:hover:bg-primary-800"
       }`}
     >
       <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -104,7 +104,7 @@ const Layout = () => {
           <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-200 dark:border-gray-700">
             <Link
               to="/dashboard"
-              className="text-xl sm:text-2xl font-bold text-primary-600"
+              className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-500"
             >
               TaskProof
             </Link>

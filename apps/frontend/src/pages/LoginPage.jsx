@@ -71,7 +71,9 @@ const LoginPage = () => {
       </div>
       <div className="relative max-w-md w-full bg-white/90 dark:bg-white/5 backdrop-blur-sm rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary-600">TaskProof</h1>
+          <h1 className="text-3xl font-bold text-primary-600 dark:text-primary-500">
+            TaskProof
+          </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
             Project & Task Collaboration System
           </p>
@@ -90,7 +92,7 @@ const LoginPage = () => {
               />
             </div>
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-500 dark:text-red-400 text-sm mt-1">
                 {errors.email.message}
               </p>
             )}
@@ -108,7 +110,7 @@ const LoginPage = () => {
               />
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-500 dark:text-red-400 text-sm mt-1">
                 {errors.password.message}
               </p>
             )}
@@ -130,7 +132,7 @@ const LoginPage = () => {
               <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">
+              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-white rounded">
                 Demo Login
               </span>
             </div>
@@ -139,19 +141,19 @@ const LoginPage = () => {
           <div className="mt-4 grid grid-cols-3 gap-2">
             <button
               onClick={() => handleDemoLogin("team_member")}
-              className="btn-secondary text-sm py-2"
+              className="btn-info text-sm md:cursor-pointer"
             >
               Member
             </button>
             <button
               onClick={() => handleDemoLogin("project_manager")}
-              className="btn-secondary text-sm py-2"
+              className="btn-info text-sm md:cursor-pointer"
             >
               PM
             </button>
             <button
               onClick={() => handleDemoLogin("admin")}
-              className="btn-secondary text-sm py-2"
+              className="btn-info text-sm md:cursor-pointer"
             >
               Admin
             </button>
@@ -160,7 +162,10 @@ const LoginPage = () => {
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-primary-600 hover:underline">
+          <Link
+            to="/signup"
+            className="text-primary-600 dark:text-primary-400 underline underline-offset-4"
+          >
             Sign up
           </Link>
         </p>

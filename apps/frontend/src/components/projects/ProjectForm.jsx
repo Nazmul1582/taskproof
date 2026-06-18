@@ -44,7 +44,9 @@ const ProjectForm = ({ initialData, onSubmit, onCancel, isLoading }) => {
           placeholder="Enter project name"
         />
         {errors.name && (
-          <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
+            {errors.name.message}
+          </p>
         )}
       </div>
 
@@ -57,7 +59,7 @@ const ProjectForm = ({ initialData, onSubmit, onCancel, isLoading }) => {
           placeholder="Enter project description"
         />
         {errors.description && (
-          <p className="text-red-500 text-sm mt-1">
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
             {errors.description.message}
           </p>
         )}
@@ -67,7 +69,9 @@ const ProjectForm = ({ initialData, onSubmit, onCancel, isLoading }) => {
         <label className="block text-sm font-medium mb-1">Deadline</label>
         <input {...register("deadline")} type="date" className="input" />
         {errors.deadline && (
-          <p className="text-red-500 text-sm mt-1">{errors.deadline.message}</p>
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
+            {errors.deadline.message}
+          </p>
         )}
       </div>
 
