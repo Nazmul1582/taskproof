@@ -1,16 +1,17 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-300: #a5b4fc;
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
-  --color-primary-800: #3730a3;
-  --color-primary-900: #312e81;
+  --color-primary-50: #eafaf5;
+  --color-primary-100: #c5f2e2;
+  --color-primary-200: #8be6c4;
+  --color-primary-300: #52d9a7;
+  --color-primary-400: #1acc8a;
+  --color-primary-500: #00b883;
+  --color-primary-600: #009970;
+  --color-primary-700: #007a5a;
+  --color-primary-800: #005c43;
+  --color-primary-900: #003d2d;
 
   --color-gray-50: #f9fafb;
   --color-gray-100: #f3f4f6;
@@ -31,6 +32,32 @@
   --font-family-sans: "Inter", system-ui, -apple-system, sans-serif;
 
   --animate-spin-slow: spin 3s linear infinite;
+  --animate-glow-slow: glow-slow 10s ease-in-out infinite;
+  --animate-glow-slower: glow-slower 12s ease-in-out infinite;
+}
+
+@keyframes glow-slow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.1) translate(-10px, -10px);
+  }
+}
+
+@keyframes glow-slower {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.15) translate(10px, 10px);
+  }
 }
 
 @layer base {
@@ -41,7 +68,7 @@
   }
 
   .dark body {
-    background-color: var(--color-gray-900);
+    background-color: #091a30;
     color: var(--color-gray-100);
   }
 }
@@ -60,18 +87,19 @@
   }
 
   .btn-primary {
-    background-color: var(--color-primary-600);
+    background-image: linear-gradient(135deg, #009970, #00b883);
     color: white;
     font-weight: 500;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
-    transition-property: background-color;
+    transition-property: opacity, box-shadow;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
   }
 
   .btn-primary:hover {
-    background-color: var(--color-primary-700);
+    opacity: 0.9;
+    box-shadow: 0 2px 8px rgba(0, 153, 112, 0.4);
   }
 
   .btn-primary:disabled {
@@ -111,7 +139,7 @@
   }
 
   .dark .input {
-    background-color: var(--color-gray-800);
+    background-color: rgba(255, 255, 255, 0.05);
     border-color: var(--color-gray-600);
     color: var(--color-gray-100);
   }

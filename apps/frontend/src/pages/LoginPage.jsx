@@ -58,8 +58,18 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-primary-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
+      {/* Background layer - behind glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-gray-100 dark:from-[#0e2342] dark:to-[#0b1b33] -z-20" />
+      {/* Background glow effects - top right & bottom left */}
+      <div
+        className="absolute inset-0 pointer-events-none overflow-hidden -z-10"
+        aria-hidden="true"
+      >
+        <div className="absolute -top-20 -right-20 sm:-top-30 sm:-right-30 md:-top-40 md:-right-40 w-[260px] h-[260px] sm:w-[400px] sm:h-[400px] md:w-[600px] md:h-[600px] bg-emerald-400/15 dark:bg-emerald-400/30 rounded-full blur-3xl animate-glow-slow" />
+        <div className="absolute -bottom-20 -left-20 sm:-bottom-30 sm:-left-30 md:-bottom-40 md:-left-40 w-[260px] h-[260px] sm:w-[400px] sm:h-[400px] md:w-[600px] md:h-[600px] bg-emerald-400/15 dark:bg-emerald-400/30 rounded-full blur-3xl animate-glow-slower" />
+      </div>
+      <div className="relative max-w-md w-full bg-white/90 dark:bg-white/5 backdrop-blur-sm rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-primary-600">TaskProof</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
