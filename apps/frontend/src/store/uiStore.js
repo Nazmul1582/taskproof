@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 const useUIStore = create(
   persist(
     (set) => ({
-      theme: "light",
+      theme: "dark",
       sidebarOpen: true,
       modalOpen: null,
 
@@ -53,6 +53,8 @@ if (typeof window !== "undefined") {
     } catch (e) {
       /* empty */
     }
+  } else {
+    document.documentElement.classList.add("dark");
   }
 }
 
