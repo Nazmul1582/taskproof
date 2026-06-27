@@ -23,9 +23,10 @@ const ProjectDetailPage = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [statusFilter, setStatusFilter] = useState("");
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["project", id],
     queryFn: () => projectService.getProject(id).then((res) => res.data.data),
+    retry: false,
   });
 
   // Add member mutation
@@ -128,6 +129,27 @@ const ProjectDetailPage = () => {
   }, {});
 
   if (isLoading) return <LoadingSpinner />;
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500 dark:text-red-400 text-lg font-medium mb-2">
+          Access Denied
+        </p>
+        <p className="text-gray-500 dark:text-gray-400 mb-4">
+          {error.response?.status === 403
+            ? "You don't have permission to view this project."
+            : "Failed to load project details."}
+        </p>
+        <button
+          onClick={() => navigate("/projects")}
+          className="btn-primary md:cursor-pointer"
+        >
+          Back to Projects
+        </button>
+      </div>
+    );
+  }
 
   const project = data?.project;
   const tasks = data?.tasks || [];

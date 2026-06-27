@@ -52,7 +52,7 @@ const createProject = async (req, res) => {
       deadline,
       status: status || "active",
       createdBy: req.user._id,
-      teamMembers: [],
+      teamMembers: [req.user._id],
     });
 
     await ActivityLog.create({

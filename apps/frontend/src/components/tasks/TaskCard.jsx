@@ -8,6 +8,7 @@ import {
   ChevronUp,
   Calendar,
   Flag,
+  Folder,
 } from "lucide-react";
 
 const PriorityBadge = ({ priority }) => {
@@ -168,6 +169,13 @@ const TaskCard = ({
             <MessageCircle className="w-3 h-3" />
             <span>{task.comments?.length || 0} comments</span>
           </div>
+
+          {task.projectId?.name && (
+            <div className="flex items-center gap-1">
+              <Folder className="w-3 h-3" />
+              <span className="truncate max-w-[120px]">{task.projectId.name}</span>
+            </div>
+          )}
 
           {task.attachments?.length > 0 && (
             <div className="flex items-center gap-1">
