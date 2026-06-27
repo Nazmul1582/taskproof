@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
-import { projectService, userService } from "../../services/api";
+import { projectService } from "../../services/api";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const taskSchema = z.object({
@@ -20,7 +20,6 @@ const taskSchema = z.object({
 
 const TaskForm = ({
   initialData,
-  projectId: initialProjectId,
   teamMembers: initialTeamMembers,
   onSubmit,
   onCancel,

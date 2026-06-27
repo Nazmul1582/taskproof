@@ -378,7 +378,9 @@ const TasksPage = () => {
             ) : (
               <>
                 <p className="text-gray-500 mb-4">
-                  No tasks found. Create your first task!
+                  {canManage
+                    ? "No tasks found. Create your first task!"
+                    : "No tasks found"}
                 </p>
                 {canManage && (
                   <button
@@ -409,10 +411,7 @@ const TasksPage = () => {
       >
         <TaskForm
           initialData={editingTask}
-          projectId={
-            editingTask?.projectId?._id || editingTask?.projectId || ""
-          }
-          teamMembers={[]} // Will be populated when project is selected
+          teamMembers={[]}
           onSubmit={handleTaskSubmit}
           onCancel={() => {
             setTaskModalOpen(false);

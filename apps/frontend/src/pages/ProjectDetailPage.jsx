@@ -324,12 +324,14 @@ const ProjectDetailPage = () => {
           ) : (
             <div className="text-center py-8">
               <p className="text-gray-500">No tasks found</p>
-              <button
-                onClick={() => setTaskModalOpen(true)}
-                className="mt-2 text-primary-600 text-sm hover:underline md:cursor-pointer"
-              >
-                Create your first task
-              </button>
+              {canManage && (
+                <button
+                  onClick={() => setTaskModalOpen(true)}
+                  className="mt-2 text-primary-600 text-sm hover:underline md:cursor-pointer"
+                >
+                  Create your first task
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -346,7 +348,6 @@ const ProjectDetailPage = () => {
       >
         <TaskForm
           initialData={editingTask}
-          projectId={id}
           onSubmit={handleTaskSubmit}
           onCancel={() => {
             setTaskModalOpen(false);
