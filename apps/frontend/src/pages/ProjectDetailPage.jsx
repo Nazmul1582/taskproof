@@ -356,6 +356,7 @@ const ProjectDetailPage = () => {
       >
         <TaskForm
           initialData={editingTask}
+          projectId={id}
           onSubmit={handleTaskSubmit}
           onCancel={() => {
             setTaskModalOpen(false);

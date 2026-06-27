@@ -20,6 +20,7 @@ const taskSchema = z.object({
 
 const TaskForm = ({
   initialData,
+  projectId: defaultProjectId,
   teamMembers: initialTeamMembers,
   onSubmit,
   onCancel,
@@ -50,7 +51,7 @@ const TaskForm = ({
       : {
           title: "",
           description: "",
-          projectId: "",
+          projectId: defaultProjectId || "",
           assignedTo: "",
           dueDate: "",
           priority: "medium",
