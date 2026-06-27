@@ -88,14 +88,14 @@ const ProjectForm = ({ initialData, onSubmit, onCancel, isLoading }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex-1 btn-primary"
+          className="flex-1 btn-primary md:cursor-pointer"
         >
           {isLoading ? "Saving..." : initialData ? "Update" : "Create"}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 btn-secondary"
+          className="flex-1 btn-secondary md:cursor-pointer"
         >
           Cancel
         </button>

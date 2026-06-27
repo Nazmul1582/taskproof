@@ -131,7 +131,7 @@ const TaskDetailPage = () => {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Task not found</p>
-        <button onClick={() => navigate("/tasks")} className="btn-primary mt-4">
+        <button onClick={() => navigate("/tasks")} className="btn-primary mt-4 md:cursor-pointer">
           Back to Tasks
         </button>
       </div>
@@ -143,7 +143,7 @@ const TaskDetailPage = () => {
       {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors md:cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
         Back
@@ -284,7 +284,7 @@ const TaskDetailPage = () => {
                   >
                     <Download className="w-4 h-4" />
                   </a>
-                  <button className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors">
+                  <button className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors md:cursor-pointer">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -353,7 +353,7 @@ const TaskDetailPage = () => {
           <button
             onClick={() => addCommentMutation.mutate(newComment)}
             disabled={!newComment.trim() || addCommentMutation.isPending}
-            className="btn-primary flex items-center justify-center gap-2 sm:w-auto w-full"
+            className="btn-primary flex items-center justify-center gap-2 sm:w-auto w-full md:cursor-pointer"
           >
             <Send className="w-4 h-4" />
             {addCommentMutation.isPending ? "Sending..." : "Send"}

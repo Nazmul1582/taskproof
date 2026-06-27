@@ -120,7 +120,7 @@ const ProjectsPage = () => {
               setEditingProject(null);
               setModalOpen(true);
             }}
-            className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5"
+            className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5 md:cursor-pointer"
           >
             <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
             New Project
@@ -146,7 +146,7 @@ const ProjectsPage = () => {
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="sm:hidden btn-secondary flex items-center justify-center gap-2"
+            className="sm:hidden btn-secondary flex items-center justify-center gap-2 md:cursor-pointer"
           >
             <Filter className="w-4 h-4" />
             Filters
@@ -203,7 +203,7 @@ const ProjectsPage = () => {
                 onClick={() =>
                   (window.location.href = `/projects/${project._id}`)
                 }
-                className="flex-1 btn-secondary flex items-center justify-center gap-1 text-xs sm:text-sm py-1.5 sm:py-2"
+                className="flex-1 btn-secondary flex items-center justify-center gap-1 text-xs sm:text-sm py-1.5 sm:py-2 md:cursor-pointer"
               >
                 <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                 View
@@ -211,7 +211,7 @@ const ProjectsPage = () => {
               {canManage && (
                 <button
                   onClick={() => handleEdit(project)}
-                  className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors md:cursor-pointer"
                 >
                   <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
@@ -219,7 +219,7 @@ const ProjectsPage = () => {
               {canManage && (
                 <button
                   onClick={() => handleDelete(project._id)}
-                  className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors md:cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>

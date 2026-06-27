@@ -228,7 +228,7 @@ const TaskForm = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="btn-primary flex-1 py-2.5"
+          className="btn-primary flex-1 py-2.5 md:cursor-pointer"
         >
           {isLoading
             ? "Saving..."
@@ -239,7 +239,7 @@ const TaskForm = ({
         <button
           type="button"
           onClick={onCancel}
-          className="btn-secondary flex-1 py-2.5"
+          className="btn-secondary flex-1 py-2.5 md:cursor-pointer"
         >
           Cancel
         </button>

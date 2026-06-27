@@ -24,7 +24,7 @@ class ErrorBoundary extends Component {
                 this.setState({ hasError: false });
                 window.location.reload();
               }}
-              className="btn-primary px-4 py-2 rounded"
+              className="btn-primary px-4 py-2 rounded md:cursor-pointer"
             >
               Reload Page
             </button>

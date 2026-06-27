@@ -72,7 +72,7 @@ const AddMemberModal = ({
                 <button
                   onClick={() => onAdd(user._id)}
                   disabled={isLoading}
-                  className="btn-secondary text-sm py-1.5 px-3 flex items-center gap-1 whitespace-nowrap ml-2"
+                  className="btn-secondary text-sm py-1.5 px-3 flex items-center gap-1 whitespace-nowrap ml-2 md:cursor-pointer"
                 >
                   <UserPlus className="w-3 h-3" />
                   Add
@@ -88,7 +88,7 @@ const AddMemberModal = ({
                   </p>
                   <button
                     onClick={() => setSearch("")}
-                    className="text-primary-600 text-sm mt-2 hover:underline"
+                    className="text-primary-600 text-sm mt-2 hover:underline md:cursor-pointer"
                   >
                     Clear search
                   </button>

@@ -81,7 +81,7 @@ const Layout = () => {
       {!sidebarOpen && (
         <button
           onClick={toggleSidebar}
-          className="lg:hidden fixed top-3.5 left-6 z-50 p-1.5 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700"
+          className="lg:hidden fixed top-3.5 left-6 z-50 p-1.5 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 md:cursor-pointer"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -112,7 +112,7 @@ const Layout = () => {
             </Link>
             <button
               onClick={toggleSidebar}
-              className="lg:hidden p-1.5 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700"
+              className="lg:hidden p-1.5 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 md:cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -137,7 +137,7 @@ const Layout = () => {
             <div className="relative">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors md:cursor-pointer"
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center flex-shrink-0">
                   <span className="text-primary-600 dark:text-primary-400 font-medium text-sm sm:text-base">
@@ -161,7 +161,7 @@ const Layout = () => {
                 <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors md:cursor-pointer"
                   >
                     <LogOut className="w-4 h-4" />
                     Logout
@@ -182,7 +182,7 @@ const Layout = () => {
             <div className="flex items-center gap-2 ml-auto">
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors md:cursor-pointer"
               >
                 {theme === "light" ? (
                   <Moon className="w-4 h-4 sm:w-5 sm:h-5" />

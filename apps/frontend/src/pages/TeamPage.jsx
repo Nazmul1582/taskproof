@@ -254,7 +254,7 @@ const TeamPage = () => {
             {search && (
               <button
                 onClick={() => setSearch("")}
-                className="mt-2 text-primary-600 text-sm hover:underline"
+                className="mt-2 text-primary-600 text-sm hover:underline md:cursor-pointer"
               >
                 Clear search
               </button>

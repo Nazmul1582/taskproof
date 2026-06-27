@@ -57,7 +57,7 @@ const NotificationBell = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+        className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 md:cursor-pointer"
       >
         <Bell className="w-5 h-5" />
         {data?.unreadCount > 0 && (
@@ -77,7 +77,7 @@ const NotificationBell = () => {
               {data?.unreadCount > 0 && (
                 <button
                   onClick={() => markAllAsRead.mutate()}
-                  className="text-sm text-primary-600 hover:underline"
+                  className="text-sm text-primary-600 hover:underline md:cursor-pointer"
                 >
                   Mark all as read
                 </button>
@@ -122,7 +122,7 @@ const NotificationBell = () => {
                         {!notification.read && (
                           <button
                             onClick={() => markAsRead.mutate(notification._id)}
-                            className="p-1 text-primary-600 hover:bg-primary-50 rounded"
+                            className="p-1 text-primary-600 hover:bg-primary-50 rounded md:cursor-pointer"
                           >
                             <Check className="w-3 h-3" />
                           </button>
@@ -131,7 +131,7 @@ const NotificationBell = () => {
                           onClick={() =>
                             deleteNotification.mutate(notification._id)
                           }
-                          className="p-1 text-red-600 hover:bg-red-50 rounded"
+                          className="p-1 text-red-600 hover:bg-red-50 rounded md:cursor-pointer"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>

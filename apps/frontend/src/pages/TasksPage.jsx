@@ -166,7 +166,7 @@ const TasksPage = () => {
             setEditingTask(null);
             setTaskModalOpen(true);
           }}
-          className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5"
+          className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5 md:cursor-pointer"
         >
           <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
           Add Task
@@ -178,7 +178,7 @@ const TasksPage = () => {
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="sm:hidden btn-secondary flex items-center justify-center gap-2"
+            className="sm:hidden btn-secondary flex items-center justify-center gap-2 md:cursor-pointer"
           >
             <Filter className="w-4 h-4" />
             {showFilters ? "Hide Filters" : "Show Filters"}
@@ -282,7 +282,7 @@ const TasksPage = () => {
                   Search: "{search}"
                   <button
                     onClick={() => setSearch("")}
-                    className="hover:text-red-500"
+                    className="hover:text-red-500 md:cursor-pointer"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -295,7 +295,7 @@ const TasksPage = () => {
                     ?.name || projectFilter}
                   <button
                     onClick={() => setProjectFilter("")}
-                    className="hover:text-red-500"
+                    className="hover:text-red-500 md:cursor-pointer"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -306,7 +306,7 @@ const TasksPage = () => {
                   Status: {statusFilter.replace("_", " ")}
                   <button
                     onClick={() => setStatusFilter("")}
-                    className="hover:text-red-500"
+                    className="hover:text-red-500 md:cursor-pointer"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -317,7 +317,7 @@ const TasksPage = () => {
                   Priority: {priorityFilter}
                   <button
                     onClick={() => setPriorityFilter("")}
-                    className="hover:text-red-500"
+                    className="hover:text-red-500 md:cursor-pointer"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -325,7 +325,7 @@ const TasksPage = () => {
               )}
               <button
                 onClick={clearFilters}
-                className="text-xs text-primary-600 hover:underline"
+                className="text-xs text-primary-600 hover:underline md:cursor-pointer"
               >
                 Clear all
               </button>
@@ -364,7 +364,7 @@ const TasksPage = () => {
                 </p>
                 <button
                   onClick={clearFilters}
-                  className="text-primary-600 text-sm hover:underline"
+                  className="text-primary-600 text-sm hover:underline md:cursor-pointer"
                 >
                   Clear all filters
                 </button>
@@ -379,7 +379,7 @@ const TasksPage = () => {
                     setEditingTask(null);
                     setTaskModalOpen(true);
                   }}
-                  className="btn-primary inline-flex items-center gap-2"
+                  className="btn-primary inline-flex items-center gap-2 md:cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   Add Task

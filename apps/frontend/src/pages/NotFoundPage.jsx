@@ -35,7 +35,7 @@ const NotFoundPage = () => {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={() => window.history.back()}
-            className="btn-secondary flex items-center justify-center gap-2"
+            className="btn-secondary flex items-center justify-center gap-2 md:cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             Go Back

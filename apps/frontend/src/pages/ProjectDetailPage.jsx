@@ -145,7 +145,7 @@ const ProjectDetailPage = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/projects")}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg md:cursor-pointer"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -159,14 +159,14 @@ const ProjectDetailPage = () => {
         <div className="flex gap-2">
           <button
             onClick={() => setMemberModalOpen(true)}
-            className="btn-secondary flex items-center gap-2 text-sm"
+            className="btn-secondary flex items-center gap-2 text-sm md:cursor-pointer"
           >
             <Users className="w-4 h-4" />
             Manage Team
           </button>
           <button
             onClick={() => setTaskModalOpen(true)}
-            className="btn-primary flex items-center gap-2 text-sm"
+            className="btn-primary flex items-center gap-2 text-sm md:cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Add Task
@@ -216,7 +216,7 @@ const ProjectDetailPage = () => {
           </h2>
           <button
             onClick={() => setMemberModalOpen(true)}
-            className="text-primary-600 hover:text-primary-700 text-sm flex items-center gap-1"
+            className="text-primary-600 hover:text-primary-700 text-sm flex items-center gap-1 md:cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             Manage
@@ -247,7 +247,7 @@ const ProjectDetailPage = () => {
             <p className="text-gray-500 mb-2">No team members yet</p>
             <button
               onClick={() => setMemberModalOpen(true)}
-              className="text-primary-600 text-sm hover:underline inline-flex items-center gap-1"
+              className="text-primary-600 text-sm hover:underline inline-flex items-center gap-1 md:cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               Add team members
@@ -263,7 +263,7 @@ const ProjectDetailPage = () => {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setStatusFilter("")}
-              className={`px-3 py-1 rounded-lg text-sm ${
+              className={`px-3 py-1 rounded-lg text-sm md:cursor-pointer ${
                 !statusFilter
                   ? "bg-primary-600 text-white"
                   : "bg-gray-100 dark:bg-gray-700"
@@ -273,7 +273,7 @@ const ProjectDetailPage = () => {
             </button>
             <button
               onClick={() => setStatusFilter("todo")}
-              className={`px-3 py-1 rounded-lg text-sm ${
+              className={`px-3 py-1 rounded-lg text-sm md:cursor-pointer ${
                 statusFilter === "todo"
                   ? "bg-primary-600 text-white"
                   : "bg-gray-100 dark:bg-gray-700"
@@ -283,7 +283,7 @@ const ProjectDetailPage = () => {
             </button>
             <button
               onClick={() => setStatusFilter("in_progress")}
-              className={`px-3 py-1 rounded-lg text-sm ${
+              className={`px-3 py-1 rounded-lg text-sm md:cursor-pointer ${
                 statusFilter === "in_progress"
                   ? "bg-primary-600 text-white"
                   : "bg-gray-100 dark:bg-gray-700"
@@ -293,7 +293,7 @@ const ProjectDetailPage = () => {
             </button>
             <button
               onClick={() => setStatusFilter("completed")}
-              className={`px-3 py-1 rounded-lg text-sm ${
+              className={`px-3 py-1 rounded-lg text-sm md:cursor-pointer ${
                 statusFilter === "completed"
                   ? "bg-primary-600 text-white"
                   : "bg-gray-100 dark:bg-gray-700"
@@ -324,7 +324,7 @@ const ProjectDetailPage = () => {
               <p className="text-gray-500">No tasks found</p>
               <button
                 onClick={() => setTaskModalOpen(true)}
-                className="mt-2 text-primary-600 text-sm hover:underline"
+                className="mt-2 text-primary-600 text-sm hover:underline md:cursor-pointer"
               >
                 Create your first task
               </button>
