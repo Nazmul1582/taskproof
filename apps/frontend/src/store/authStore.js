@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { authService } from "../services/api";
-import { queryClient } from "../main";
+import { queryClient } from "../lib/queryClient";
 
 const useAuthStore = create(
   persist(
