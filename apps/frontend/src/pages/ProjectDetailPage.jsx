@@ -141,7 +141,7 @@ const ProjectDetailPage = () => {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/projects")}
@@ -156,7 +156,7 @@ const ProjectDetailPage = () => {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 self-end">
           <button
             onClick={() => setMemberModalOpen(true)}
             className="btn-secondary flex items-center gap-2 text-sm md:cursor-pointer"

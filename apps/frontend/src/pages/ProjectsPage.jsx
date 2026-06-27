@@ -8,6 +8,7 @@ import ProjectForm from "../components/projects/ProjectForm";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import StatusBadge from "../components/projects/StatusBadge";
 import { useAuthStore } from "../store/authStore";
+import { Link } from "react-router-dom";
 
 const ProjectsPage = () => {
   const { user } = useAuthStore();
@@ -154,7 +155,7 @@ const ProjectsPage = () => {
           <select
             value={statusFilter}
             onChange={handleStatusChange}
-            className={`input w-full sm:w-48 text-sm sm:text-base ${showFilters ? "block" : "hidden sm:block"}`}
+            className={`input w-full sm:w-48 text-sm sm:text-base dark:bg-gray-800 ${showFilters ? "block" : "hidden sm:block"}`}
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -199,19 +200,17 @@ const ProjectsPage = () => {
               </div>
             </div>
             <div className="flex gap-2 pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700">
-              <button
-                onClick={() =>
-                  (window.location.href = `/projects/${project._id}`)
-                }
+              <Link
+                to={`/projects/${project._id}`}
                 className="flex-1 btn-secondary flex items-center justify-center gap-1 text-xs sm:text-sm py-1.5 sm:py-2 md:cursor-pointer"
               >
                 <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                 View
-              </button>
+              </Link>
               {canManage && (
                 <button
                   onClick={() => handleEdit(project)}
-                  className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors md:cursor-pointer"
+                  className="p-1.5 sm:p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/50 rounded-lg transition-colors md:cursor-pointer"
                 >
                   <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
@@ -219,7 +218,7 @@ const ProjectsPage = () => {
               {canManage && (
                 <button
                   onClick={() => handleDelete(project._id)}
-                  className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors md:cursor-pointer"
+                  className="p-1.5 sm:p-2 text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/50 rounded-lg transition-colors md:cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>

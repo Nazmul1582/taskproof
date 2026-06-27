@@ -114,14 +114,14 @@ const TaskCard = ({
           <div className="flex items-center gap-1 order-3 ml-auto sm:ml-0">
             <button
               onClick={() => onEdit(task)}
-              className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors md:cursor-pointer"
+              className="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/50 rounded-lg transition-colors md:cursor-pointer"
               title="Edit task"
             >
               <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
             <button
               onClick={() => onDelete(task._id)}
-              className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors md:cursor-pointer"
+              className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/50 rounded-lg transition-colors md:cursor-pointer"
               title="Delete task"
             >
               <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

@@ -77,7 +77,7 @@ const ProjectForm = ({ initialData, onSubmit, onCancel, isLoading }) => {
 
       <div>
         <label className="block text-sm font-medium mb-1">Status</label>
-        <select {...register("status")} className="input">
+        <select {...register("status")} className="input dark:bg-gray-800">
           <option value="active">Active</option>
           <option value="completed">Completed</option>
           <option value="on_hold">On Hold</option>

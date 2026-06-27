@@ -173,7 +173,7 @@ const TaskDetailPage = () => {
             <select
               value={task.status}
               onChange={(e) => updateStatusMutation.mutate(e.target.value)}
-              className="input text-sm w-full"
+              className="input text-sm w-full dark:bg-gray-800"
               disabled={updateStatusMutation.isPending}
             >
               <option value="todo">To Do</option>
@@ -240,7 +240,7 @@ const TaskDetailPage = () => {
             <select
               value={task.status}
               onChange={(e) => updateStatusMutation.mutate(e.target.value)}
-              className="input text-sm w-40"
+              className="input text-sm w-40 dark:bg-gray-800"
               disabled={updateStatusMutation.isPending}
             >
               <option value="todo">To Do</option>

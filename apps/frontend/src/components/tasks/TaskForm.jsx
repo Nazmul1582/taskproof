@@ -144,7 +144,7 @@ const TaskForm = ({
         <label className="block text-sm font-medium mb-1">Project *</label>
         <select
           {...register("projectId")}
-          className="input"
+          className="input dark:bg-gray-800"
           onChange={(e) => {
             setSelectedProjectId(e.target.value);
             register("projectId").onChange(e);
@@ -173,7 +173,7 @@ const TaskForm = ({
         ) : (
           <select
             {...register("assignedTo")}
-            className="input"
+            className="input dark:bg-gray-800"
             disabled={!watchProjectId}
           >
             <option value="">
@@ -217,7 +217,7 @@ const TaskForm = ({
 
       <div>
         <label className="block text-sm font-medium mb-1">Priority</label>
-        <select {...register("priority")} className="input">
+        <select {...register("priority")} className="input dark:bg-gray-800">
           <option value="low">🟢 Low</option>
           <option value="medium">🟡 Medium</option>
           <option value="high">🔴 High</option>

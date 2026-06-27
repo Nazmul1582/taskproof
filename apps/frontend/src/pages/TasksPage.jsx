@@ -214,7 +214,7 @@ const TasksPage = () => {
                 setProjectFilter(e.target.value);
                 setPage(1);
               }}
-              className="input w-full sm:w-40 text-sm sm:text-base"
+              className="input w-full sm:w-40 text-sm sm:text-base dark:bg-gray-800"
             >
               <option value="">All Projects</option>
               {projectsData?.projects?.map((project) => (
@@ -231,7 +231,7 @@ const TasksPage = () => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="input w-full sm:w-36 text-sm sm:text-base"
+              className="input w-full sm:w-36 text-sm sm:text-base dark:bg-gray-800"
             >
               <option value="">All Status</option>
               <option value="todo">To Do</option>
@@ -246,7 +246,7 @@ const TasksPage = () => {
                 setPriorityFilter(e.target.value);
                 setPage(1);
               }}
-              className="input w-full sm:w-36 text-sm sm:text-base"
+              className="input w-full sm:w-36 text-sm sm:text-base dark:bg-gray-800"
             >
               <option value="">All Priority</option>
               <option value="high">High 🔴</option>
@@ -262,7 +262,7 @@ const TasksPage = () => {
                 setSortBy(newSortBy);
                 setSortOrder(newSortOrder);
               }}
-              className="input w-full sm:w-44 text-sm sm:text-base"
+              className="input w-full sm:w-44 text-sm sm:text-base dark:bg-gray-800"
             >
               <option value="createdAt-desc">Latest Created</option>
               <option value="createdAt-asc">Oldest Created</option>
