@@ -1,5 +1,5 @@
 // apps/frontend/src/pages/ProjectDetailPage.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { projectService, taskService } from "../services/api";
@@ -28,6 +28,13 @@ const ProjectDetailPage = () => {
     queryFn: () => projectService.getProject(id).then((res) => res.data.data),
     retry: false,
   });
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Access Denied");
+      navigate("/projects");
+    }
+  }, [error, navigate]);
 
   // Add member mutation
   const addMemberMutation = useMutation({
@@ -129,27 +136,6 @@ const ProjectDetailPage = () => {
   }, {});
 
   if (isLoading) return <LoadingSpinner />;
-
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-red-500 dark:text-red-400 text-lg font-medium mb-2">
-          Access Denied
-        </p>
-        <p className="text-gray-500 dark:text-gray-400 mb-4">
-          {error.response?.status === 403
-            ? "You don't have permission to view this project."
-            : "Failed to load project details."}
-        </p>
-        <button
-          onClick={() => navigate("/projects")}
-          className="btn-primary md:cursor-pointer"
-        >
-          Back to Projects
-        </button>
-      </div>
-    );
-  }
 
   const project = data?.project;
   const tasks = data?.tasks || [];
