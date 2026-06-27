@@ -6,26 +6,11 @@ import toast from "react-hot-toast";
 import Modal from "../components/common/Modal";
 import ProjectForm from "../components/projects/ProjectForm";
 import LoadingSpinner from "../components/common/LoadingSpinner";
-
-const StatusBadge = ({ status }) => {
-  const styles = {
-    active:
-      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-    completed:
-      "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-    on_hold:
-      "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  };
-  return (
-    <span
-      className={`px-2 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium ${styles[status]}`}
-    >
-      {status?.replace("_", " ")?.toUpperCase()}
-    </span>
-  );
-};
+import StatusBadge from "../components/projects/StatusBadge";
+import { useAuthStore } from "../store/authStore";
 
 const ProjectsPage = () => {
+  const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -33,6 +18,7 @@ const ProjectsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const canManage = user?.role !== "team_member";
 
   const queryParams = {
     page,
@@ -128,16 +114,18 @@ const ProjectsPage = () => {
             Manage all your projects
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditingProject(null);
-            setModalOpen(true);
-          }}
-          className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5"
-        >
-          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-          New Project
-        </button>
+        {canManage && (
+          <button
+            onClick={() => {
+              setEditingProject(null);
+              setModalOpen(true);
+            }}
+            className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5"
+          >
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+            New Project
+          </button>
+        )}
       </div>
 
       {/* Search and Filter Section */}
@@ -198,7 +186,7 @@ const ProjectsPage = () => {
                 <span
                   className={
                     new Date(project.deadline) < new Date()
-                      ? "text-red-600"
+                      ? "text-red-600 dark:text-red-500"
                       : ""
                   }
                 >
@@ -220,18 +208,22 @@ const ProjectsPage = () => {
                 <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                 View
               </button>
-              <button
-                onClick={() => handleEdit(project)}
-                className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-              >
-                <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
-              <button
-                onClick={() => handleDelete(project._id)}
-                className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-              >
-                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
+              {canManage && (
+                <button
+                  onClick={() => handleEdit(project)}
+                  className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                >
+                  <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
+              )}
+              {canManage && (
+                <button
+                  onClick={() => handleDelete(project._id)}
+                  className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
+              )}
             </div>
           </div>
         ))}
