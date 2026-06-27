@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { userService } from "../../services/api";
-import { UserPlus, Search, X } from "lucide-react";
+import { UserPlus, Search } from "lucide-react";
 import Modal from "../common/Modal";
 
 const AddMemberModal = ({
   isOpen,
   onClose,
-  projectId,
   currentMembers,
   onAdd,
   isLoading,

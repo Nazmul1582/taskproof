@@ -1,12 +1,12 @@
 const express = require("express");
-const { protect, adminOnly } = require("../middlewares/authMiddleware");
+const { protect, adminOnly, adminOrPM } = require("../middlewares/authMiddleware");
 const validate = require("../middlewares/validationMiddleware");
 const { updateUserSchema, userIdParamSchema } = require("../validations");
 
 const router = express.Router();
 
 // Get all users (admin only)
-router.get("/", protect, adminOnly, async (req, res) => {
+router.get("/", protect, adminOrPM, async (req, res) => {
   try {
     const User = require("../models/User");
     const users = await User.find({}, "-password");

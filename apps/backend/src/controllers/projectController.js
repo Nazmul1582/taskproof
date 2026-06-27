@@ -123,10 +123,7 @@ const updateProject = async (req, res) => {
         .json({ success: false, message: "Project not found" });
     }
 
-    if (
-      req.user.role !== "admin" &&
-      project.createdBy.toString() !== req.user._id.toString()
-    ) {
+    if (req.user.role === "team_member") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
@@ -162,10 +159,7 @@ const deleteProject = async (req, res) => {
         .json({ success: false, message: "Project not found" });
     }
 
-    if (
-      req.user.role !== "admin" &&
-      project.createdBy.toString() !== req.user._id.toString()
-    ) {
+    if (req.user.role === "team_member") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
@@ -202,10 +196,7 @@ const addTeamMember = async (req, res) => {
         .json({ success: false, message: "Project not found" });
     }
 
-    if (
-      req.user.role !== "admin" &&
-      project.createdBy.toString() !== req.user._id.toString()
-    ) {
+    if (req.user.role === "team_member") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 
@@ -249,10 +240,7 @@ const removeTeamMember = async (req, res) => {
         .json({ success: false, message: "Project not found" });
     }
 
-    if (
-      req.user.role !== "admin" &&
-      project.createdBy.toString() !== req.user._id.toString()
-    ) {
+    if (req.user.role === "team_member") {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 

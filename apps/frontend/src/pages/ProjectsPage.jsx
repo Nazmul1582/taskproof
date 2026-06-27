@@ -8,10 +8,11 @@ import ProjectForm from "../components/projects/ProjectForm";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import StatusBadge from "../components/projects/StatusBadge";
 import { useAuthStore } from "../store/authStore";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ProjectsPage = () => {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -168,10 +169,10 @@ const ProjectsPage = () => {
       {/* Projects Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {data?.projects?.map((project) => (
-          <Link
+          <div
             key={project._id}
-            to={`/projects/${project._id}`}
-            className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5 md:p-6 hover:shadow-md transition-shadow"
+            onClick={() => navigate(`/projects/${project._id}`)}
+            className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5 md:p-6 hover:shadow-md transition-shadow cursor-pointer"
           >
             <div className="flex items-start justify-between gap-2 mb-3">
               <h3 className="text-base sm:text-lg font-semibold wrap-break-word flex-1">
@@ -201,12 +202,20 @@ const ProjectsPage = () => {
               </div>
             </div>
             <div className="flex gap-2 pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700">
-              <button className="flex-1 btn-secondary flex items-center justify-center gap-1 text-xs sm:text-sm py-1.5 sm:py-2 md:cursor-pointer">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/projects/${project._id}`);
+                }}
+                className="flex-1 btn-secondary flex items-center justify-center gap-1 text-xs sm:text-sm py-1.5 sm:py-2 md:cursor-pointer"
+              >
                 <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                 View
               </button>
               {canManage && (
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEdit(project);
@@ -218,6 +227,7 @@ const ProjectsPage = () => {
               )}
               {canManage && (
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(project._id);
@@ -228,7 +238,7 @@ const ProjectsPage = () => {
                 </button>
               )}
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
