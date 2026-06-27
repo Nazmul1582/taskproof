@@ -122,7 +122,7 @@ const SignupPage = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full btn-primary flex items-center justify-center gap-2"
+            className="w-full btn-primary flex items-center justify-center gap-2 md:cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             {isLoading ? "Creating account..." : "Sign Up"}

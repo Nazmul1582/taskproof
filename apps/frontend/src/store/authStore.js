@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { authService } from "../services/api";
+import { queryClient } from "../main";
 
 const useAuthStore = create(
   persist(
@@ -10,15 +11,18 @@ const useAuthStore = create(
       isAuthenticated: false,
       isLoading: true,
 
-      setAuth: (user, token) =>
+      setAuth: (user, token) => {
+        queryClient.clear();
         set({
           user,
           token,
           isAuthenticated: true,
           isLoading: false,
-        }),
+        });
+      },
 
       logout: () => {
+        queryClient.clear();
         set({
           user: null,
           token: null,
@@ -43,6 +47,7 @@ const useAuthStore = create(
           });
           // eslint-disable-next-line no-unused-vars
         } catch (error) {
+          queryClient.clear();
           set({
             user: null,
             token: null,
