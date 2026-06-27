@@ -7,8 +7,11 @@ import TaskCard from "../components/tasks/TaskCard";
 import TaskForm from "../components/tasks/TaskForm";
 import Modal from "../components/common/Modal";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import { useAuthStore } from "../store/authStore";
 
 const TasksPage = () => {
+  const { user } = useAuthStore();
+  const canManage = user?.role !== "team_member";
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -161,16 +164,18 @@ const TasksPage = () => {
             Manage and track all tasks across projects
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditingTask(null);
-            setTaskModalOpen(true);
-          }}
-          className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5 md:cursor-pointer"
-        >
-          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-          Add Task
-        </button>
+        {canManage && (
+          <button
+            onClick={() => {
+              setEditingTask(null);
+              setTaskModalOpen(true);
+            }}
+            className="btn-primary flex items-center justify-center gap-2 text-sm sm:text-base py-2 sm:py-2.5 md:cursor-pointer"
+          >
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+            Add Task
+          </button>
+        )}
       </div>
 
       {/* Search and Filters */}
@@ -353,6 +358,7 @@ const TasksPage = () => {
               onDelete={handleDeleteTask}
               onStatusChange={handleStatusChange}
               isUpdatingStatus={updateStatusMutation.isPending}
+              canManage={canManage}
             />
           ))
         ) : (
@@ -374,16 +380,18 @@ const TasksPage = () => {
                 <p className="text-gray-500 mb-4">
                   No tasks found. Create your first task!
                 </p>
-                <button
-                  onClick={() => {
-                    setEditingTask(null);
-                    setTaskModalOpen(true);
-                  }}
-                  className="btn-primary inline-flex items-center gap-2 md:cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Task
-                </button>
+                {canManage && (
+                  <button
+                    onClick={() => {
+                      setEditingTask(null);
+                      setTaskModalOpen(true);
+                    }}
+                    className="btn-primary inline-flex items-center gap-2 md:cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Task
+                  </button>
+                )}
               </>
             )}
           </div>

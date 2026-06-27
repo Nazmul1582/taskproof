@@ -3,23 +3,18 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { projectService, taskService } from "../services/api";
-import {
-  ArrowLeft,
-  Plus,
-  Edit2,
-  Trash2,
-  Users,
-  UserPlus,
-  UserMinus,
-} from "lucide-react";
+import { ArrowLeft, Plus, Users, UserPlus } from "lucide-react";
 import toast from "react-hot-toast";
 import TaskCard from "../components/tasks/TaskCard";
 import TaskForm from "../components/tasks/TaskForm";
 import Modal from "../components/common/Modal";
 import AddMemberModal from "../components/team/AddMemberModal";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import { useAuthStore } from "../store/authStore";
 
 const ProjectDetailPage = () => {
+  const { user } = useAuthStore();
+  const canManage = user?.role !== "team_member";
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -36,7 +31,7 @@ const ProjectDetailPage = () => {
   // Add member mutation
   const addMemberMutation = useMutation({
     mutationFn: (userId) => projectService.addMember(id, userId),
-    onSuccess: (response) => {
+    onSuccess: () => {
       queryClient.invalidateQueries(["project", id]);
       toast.success("Member added successfully");
       setMemberModalOpen(false);
@@ -157,20 +152,24 @@ const ProjectDetailPage = () => {
           </div>
         </div>
         <div className="flex gap-2 self-end">
-          <button
-            onClick={() => setMemberModalOpen(true)}
-            className="btn-secondary flex items-center gap-2 text-sm md:cursor-pointer"
-          >
-            <Users className="w-4 h-4" />
-            Manage Team
-          </button>
-          <button
-            onClick={() => setTaskModalOpen(true)}
-            className="btn-primary flex items-center gap-2 text-sm md:cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            Add Task
-          </button>
+          {canManage && (
+            <button
+              onClick={() => setMemberModalOpen(true)}
+              className="btn-secondary flex items-center gap-2 text-sm md:cursor-pointer"
+            >
+              <Users className="w-4 h-4" />
+              Manage Team
+            </button>
+          )}
+          {canManage && (
+            <button
+              onClick={() => setTaskModalOpen(true)}
+              className="btn-primary flex items-center gap-2 text-sm md:cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              Add Task
+            </button>
+          )}
         </div>
       </div>
 
@@ -214,13 +213,15 @@ const ProjectDetailPage = () => {
             <Users className="w-5 h-5" />
             Team Members ({teamMembers.length})
           </h2>
-          <button
-            onClick={() => setMemberModalOpen(true)}
-            className="text-primary-600 hover:text-primary-700 text-sm flex items-center gap-1 md:cursor-pointer"
-          >
-            <UserPlus className="w-4 h-4" />
-            Manage
-          </button>
+          {canManage && (
+            <button
+              onClick={() => setMemberModalOpen(true)}
+              className="text-primary-600 hover:text-primary-700 text-sm flex items-center gap-1 md:cursor-pointer"
+            >
+              <UserPlus className="w-4 h-4" />
+              Manage
+            </button>
+          )}
         </div>
 
         {teamMembers.length > 0 ? (
@@ -317,6 +318,7 @@ const ProjectDetailPage = () => {
                 onDelete={handleDeleteTask}
                 onStatusChange={handleStatusChange}
                 isUpdatingStatus={updateStatusMutation.isPending}
+                canManage={canManage}
               />
             ))
           ) : (

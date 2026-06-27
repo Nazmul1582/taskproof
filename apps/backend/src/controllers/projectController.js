@@ -52,7 +52,7 @@ const createProject = async (req, res) => {
       deadline,
       status: status || "active",
       createdBy: req.user._id,
-      teamMembers: [req.user._id],
+      teamMembers: [],
     });
 
     await ActivityLog.create({
@@ -81,7 +81,7 @@ const getProject = async (req, res) => {
 
     const project = await Project.findById(id)
       .populate("createdBy", "name email")
-      .populate("teamMembers", "name email avatar");
+      .populate("teamMembers", "name email avatar role");
 
     if (!project) {
       return res

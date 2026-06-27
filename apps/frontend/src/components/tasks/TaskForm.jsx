@@ -26,12 +26,6 @@ const TaskForm = ({
   onCancel,
   isLoading,
 }) => {
-  const [selectedProjectId, setSelectedProjectId] = useState(
-    initialData?.projectId?._id ||
-      initialData?.projectId ||
-      initialProjectId ||
-      "",
-  );
   const [teamMembers, setTeamMembers] = useState(initialTeamMembers || []);
 
   const {
@@ -82,22 +76,26 @@ const TaskForm = ({
     enabled: !!watchProjectId && watchProjectId !== "",
   });
 
-  // Update team members when project changes
+  // Load team members when project changes
   useEffect(() => {
     if (projectData?.project?.teamMembers) {
       setTeamMembers(projectData.project.teamMembers);
-      // Clear assignedTo if current selection is not in new team
+    }
+  }, [projectData]);
+
+  // Sync the select DOM value after team members are rendered as options
+  useEffect(() => {
+    if (teamMembers.length > 0) {
       const currentAssignedTo = watch("assignedTo");
-      if (
-        currentAssignedTo &&
-        !projectData.project.teamMembers.some(
-          (m) => m._id === currentAssignedTo,
-        )
-      ) {
-        setValue("assignedTo", "");
+      if (currentAssignedTo) {
+        if (teamMembers.some((m) => m._id === currentAssignedTo)) {
+          setValue("assignedTo", currentAssignedTo);
+        } else {
+          setValue("assignedTo", "");
+        }
       }
     }
-  }, [projectData, setValue, watch]);
+  }, [teamMembers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (projectsLoading) {
     return (
@@ -146,7 +144,6 @@ const TaskForm = ({
           {...register("projectId")}
           className="input dark:bg-gray-800"
           onChange={(e) => {
-            setSelectedProjectId(e.target.value);
             register("projectId").onChange(e);
           }}
         >
