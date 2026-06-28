@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskService, projectService } from "../services/api";
 import { Search, Filter, X, Plus } from "lucide-react";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 import TaskCard from "../components/tasks/TaskCard";
 import TaskForm from "../components/tasks/TaskForm";
 import Modal from "../components/common/Modal";
@@ -111,7 +112,16 @@ const TasksPage = () => {
   };
 
   const handleDeleteTask = async (taskId) => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
+    const result = await Swal.fire({
+      title: "Delete Task?",
+      text: "Are you sure you want to delete this task?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it",
+    });
+    if (result.isConfirmed) {
       deleteTaskMutation.mutate(taskId);
     }
   };

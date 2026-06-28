@@ -131,7 +131,7 @@ const NotificationBell = () => {
                           onClick={() =>
                             deleteNotification.mutate(notification._id)
                           }
-                          className="p-1 text-red-600 hover:bg-red-50 rounded md:cursor-pointer"
+                          className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/50 rounded md:cursor-pointer"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>

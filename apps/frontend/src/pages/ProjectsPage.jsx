@@ -3,6 +3,7 @@ import useDebounce from "../hooks/useDebounce";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "../services/api";
 import { Plus, Search, Edit2, Trash2, Eye, Filter } from "lucide-react";
+import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import Modal from "../components/common/Modal";
 import ProjectForm from "../components/projects/ProjectForm";
@@ -94,8 +95,17 @@ const ProjectsPage = () => {
     setModalOpen(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this project?")) {
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Delete Project?",
+      text: "Are you sure you want to delete this project?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it",
+    });
+    if (result.isConfirmed) {
       deleteMutation.mutate(id);
     }
   };

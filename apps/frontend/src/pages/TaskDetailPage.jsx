@@ -110,7 +110,6 @@ const TaskDetailPage = () => {
     setUploading(true);
 
     try {
-      // Note: You'll need to implement file upload endpoint
       // const response = await taskService.addAttachment(id, formData)
       toast.success("File uploaded successfully");
       queryClient.invalidateQueries(["task", id]);
@@ -131,7 +130,10 @@ const TaskDetailPage = () => {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Task not found</p>
-        <button onClick={() => navigate("/tasks")} className="btn-primary mt-4 md:cursor-pointer">
+        <button
+          onClick={() => navigate("/tasks")}
+          className="btn-primary mt-4 md:cursor-pointer"
+        >
           Back to Tasks
         </button>
       </div>

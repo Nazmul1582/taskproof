@@ -59,8 +59,7 @@ A full-stack web application for teams to manage projects, tasks, members, and t
 - Dark/Light mode with system preference detection (persisted)
 - Responsive design (mobile-friendly sidebar)
 - Task comments with add/delete
-- File attachment support (local + Cloudinary ready)
-- Pagination for projects, tasks, and activities
+- File attachment upload UI (backend endpoint requires wiring)
 - Custom 404 page
 
 ## Tech Stack
