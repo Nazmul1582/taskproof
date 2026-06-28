@@ -106,7 +106,7 @@ const Dashboard = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <KPICard
           title="Total Projects"
           value={kpis?.totalProjects}
@@ -232,19 +232,19 @@ const Dashboard = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b dark:border-gray-700">
-                <th className="text-left py-3">Member</th>
-                <th className="text-center py-3">Total Tasks</th>
-                <th className="text-center py-3">Completed</th>
-                <th className="text-center py-3">Pending</th>
-                <th className="text-center py-3">Completion Rate</th>
+              <tr className="border-b border-gray-300 dark:border-gray-700">
+                <th className="text-left px-2 py-3">Member</th>
+                <th className="text-center px-2 py-3">Total Tasks</th>
+                <th className="text-center px-2 py-3">Completed</th>
+                <th className="text-center px-2 py-3">Pending</th>
+                <th className="text-center px-2 py-3">Completion Rate</th>
               </tr>
             </thead>
             <tbody>
               {workload?.memberWorkload?.map((member) => (
                 <tr
                   key={member.memberId}
-                  className="border-b dark:border-gray-700"
+                  className="border-b border-gray-300 dark:border-gray-700"
                 >
                   <td className="py-3">
                     <div className="flex items-center gap-2">
@@ -305,7 +305,7 @@ const Dashboard = () => {
             <Clock className="w-5 h-5" />
             Recent Activities
           </h2>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="space-y-3 max-h-96 overflow-y-auto dark:scrollbar-thumb-gray-700">
             {activities?.activities?.slice(0, 5).map((activity) => (
               <div
                 key={activity._id}
@@ -336,7 +336,7 @@ const Dashboard = () => {
             <Calendar className="w-5 h-5" />
             Upcoming Deadlines
           </h2>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="space-y-3 max-h-96 overflow-y-auto dark:scrollbar-thumb-gray-700">
             {upcoming?.upcomingDeadlines?.map((task) => (
               <div
                 key={task._id}
@@ -356,8 +356,8 @@ const Dashboard = () => {
               </div>
             ))}
             {upcoming?.highPriorityTasks?.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-semibold text-red-600 mb-2">
+              <div className="space-y-3 ">
+                <h3 className="mt-4 text-sm font-semibold text-red-600 mb-2">
                   High Priority Tasks
                 </h3>
                 {upcoming.highPriorityTasks.map((task) => (

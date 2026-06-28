@@ -283,12 +283,13 @@ const TeamPage = () => {
               </p>
               <p className="font-medium mt-1">
                 {
-                  filteredMembers.reduce((best, current) =>
-                    current.completed / current.total >
-                    best.completed / best.total
-                      ? current
-                      : best,
-                  ).memberName
+                  filteredMembers.reduce((best, current) => {
+                    const bestRate =
+                      best.total > 0 ? best.completed / best.total : 0;
+                    const currentRate =
+                      current.total > 0 ? current.completed / current.total : 0;
+                    return currentRate > bestRate ? current : best;
+                  }).memberName
                 }
               </p>
             </div>
