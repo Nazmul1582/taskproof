@@ -152,8 +152,6 @@ const TasksPage = () => {
     sortBy !== "createdAt" ||
     sortOrder !== "desc";
 
-  if (isLoading) return <LoadingSpinner />;
-
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -345,6 +343,9 @@ const TasksPage = () => {
       </div>
 
       {/* Tasks List */}
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
       <div className="space-y-3">
         {getSortedTasks().length > 0 ? (
           getSortedTasks().map((task) => (
@@ -399,6 +400,7 @@ const TasksPage = () => {
           </div>
         )}
       </div>
+      )}
 
       {/* Add/Edit Task Modal */}
       <Modal
