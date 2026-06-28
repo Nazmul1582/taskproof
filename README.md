@@ -2,6 +2,8 @@
 
 A full-stack web application for teams to manage projects, tasks, members, and track work progress with role-based access control and real-time insights.
 
+🔗 **Live App:** [taskproof-frontend.vercel.app](https://taskproof-frontend.vercel.app)
+
 ## Features
 
 ### Authentication & Role-Based Access
@@ -175,6 +177,8 @@ taskproof/
    ```
 
    The app will be available at `http://localhost:5173`.
+
+> **Live deployment:** [taskproof-frontend.vercel.app](https://taskproof-frontend.vercel.app)
 
 ## Demo Credentials
 

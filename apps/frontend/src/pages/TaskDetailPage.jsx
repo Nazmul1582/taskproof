@@ -254,7 +254,7 @@ const TaskDetailPage = () => {
       </div>
 
       {/* Attachments Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+      {/* <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
         <h3 className="text-base sm:text-lg font-semibold mb-4">Attachments</h3>
         <div className="mb-4">
           <label className="btn-secondary cursor-pointer inline-flex items-center gap-2 text-sm">
@@ -298,7 +298,7 @@ const TaskDetailPage = () => {
             </p>
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* Comments Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
