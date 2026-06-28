@@ -95,7 +95,7 @@ const getProject = async (req, res) => {
     const isCreator =
       project.createdBy._id.toString() === req.user._id.toString();
 
-    if (req.user.role !== "admin" && !isMember && !isCreator) {
+    if (req.user.role === "team_member" && !isMember && !isCreator) {
       return res.status(403).json({ success: false, message: "Access denied" });
     }
 

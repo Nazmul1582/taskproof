@@ -25,6 +25,22 @@ import {
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import KPICard from "../components/common/KPICard";
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 text-sm text-gray-900 dark:text-gray-100 shadow-lg">
+        <p className="font-medium">{label}</p>
+        {payload.map((entry) => (
+          <p key={entry.name} style={{ color: entry.color }}>
+            {entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 const Dashboard = () => {
   const { data: kpis, isLoading: kpisLoading } = useQuery({
     queryKey: ["dashboard-kpis"],
@@ -36,17 +52,17 @@ const Dashboard = () => {
     queryFn: () => dashboardService.getCharts().then((res) => res.data.data),
   });
 
-  const { data: workload, isLoading: workloadLoading } = useQuery({
+  const { data: workload } = useQuery({
     queryKey: ["dashboard-workload"],
     queryFn: () => dashboardService.getWorkload().then((res) => res.data.data),
   });
 
-  const { data: upcoming, isLoading: upcomingLoading } = useQuery({
+  const { data: upcoming } = useQuery({
     queryKey: ["dashboard-upcoming"],
     queryFn: () => dashboardService.getUpcoming().then((res) => res.data.data),
   });
 
-  const { data: activities, isLoading: activitiesLoading } = useQuery({
+  const { data: activities } = useQuery({
     queryKey: ["activities"],
     queryFn: () =>
       activityService.getActivities({ limit: 5 }).then((res) => res.data.data),
@@ -56,7 +72,11 @@ const Dashboard = () => {
     return <LoadingSpinner />;
   }
 
-  const COLORS = ["#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6"];
+  const STATUS_COLORS = {
+    todo: "#0088fe",
+    in_progress: "#8b5cf6",
+    completed: "#00b883",
+  };
 
   const priorityData =
     charts?.tasksByPriority?.map((item) => ({
@@ -73,6 +93,7 @@ const Dashboard = () => {
             ? "In Progress"
             : "Completed",
       value: item.count,
+      id: item._id,
     })) || [];
 
   return (
@@ -128,9 +149,18 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip />
+                <defs>
+                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#00b883" />
+                    <stop offset="100%" stopColor="#009970" />
+                  </linearGradient>
+                </defs>
+                <Tooltip
+                  cursor={{ fill: "rgba(0, 152, 112, 0.15)" }}
+                  content={<CustomTooltip />}
+                />
                 <Legend />
-                <Bar dataKey="value" fill="#6366f1" />
+                <Bar dataKey="value" fill="url(#barGradient)" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -148,17 +178,41 @@ const Dashboard = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
-                  }
-                  outerRadius={80}
+                  label={({
+                    cx,
+                    cy,
+                    midAngle,
+                    innerRadius,
+                    outerRadius,
+                    percent,
+                  }) => {
+                    const RADIAN = Math.PI / 180;
+                    const radius =
+                      innerRadius + (outerRadius - innerRadius) * 0.5;
+                    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                    return (
+                      <text
+                        x={x}
+                        y={y}
+                        fill="#fff"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fontSize={14}
+                        fontWeight={600}
+                      >
+                        {`${(percent * 100).toFixed(0)}%`}
+                      </text>
+                    );
+                  }}
+                  outerRadius={110}
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {statusData.map((entry, index) => (
+                  {statusData.map((entry) => (
                     <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+                      key={entry.id}
+                      fill={STATUS_COLORS[entry.id] || "#8884d8"}
                     />
                   ))}
                 </Pie>
