@@ -16,6 +16,7 @@ const taskSchema = z.object({
   assignedTo: z.string().min(1, "Please select a team member"),
   dueDate: z.string().min(1, "Due date is required"),
   priority: z.enum(["high", "medium", "low"]),
+  status: z.enum(["todo", "in_progress", "completed"]),
 });
 
 const TaskForm = ({
@@ -47,6 +48,7 @@ const TaskForm = ({
             ? new Date(initialData.dueDate).toISOString().split("T")[0]
             : "",
           priority: initialData.priority || "medium",
+          status: initialData.status || "todo",
         }
       : {
           title: "",
@@ -55,6 +57,7 @@ const TaskForm = ({
           assignedTo: "",
           dueDate: "",
           priority: "medium",
+          status: "todo",
         },
   });
 
@@ -218,6 +221,15 @@ const TaskForm = ({
           <option value="low">🟢 Low</option>
           <option value="medium">🟡 Medium</option>
           <option value="high">🔴 High</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Status</label>
+        <select {...register("status")} className="input dark:bg-gray-800">
+          <option value="todo">📋 To Do</option>
+          <option value="in_progress">🔄 In Progress</option>
+          <option value="completed">✅ Completed</option>
         </select>
       </div>
 
