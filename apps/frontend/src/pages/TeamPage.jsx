@@ -22,13 +22,14 @@ const TeamPage = () => {
   });
 
   const filteredMembers =
-    workload?.memberWorkload?.filter(
-      (member) =>
-        member.memberName?.toLowerCase().includes(search.toLowerCase()) ||
-        member.email?.toLowerCase().includes(search.toLowerCase()) ||
-        member.role?.toLowerCase().includes(search.toLowerCase()),
-    ) || [];
-
+    workload?.memberWorkload
+      ?.filter(
+        (member) =>
+          member.memberName?.toLowerCase().includes(search.toLowerCase()) ||
+          member.email?.toLowerCase().includes(search.toLowerCase()) ||
+          member.role?.toLowerCase().includes(search.toLowerCase()),
+      )
+      .sort((a, b) => b.total - a.total) || [];
   if (isLoading) return <LoadingSpinner />;
 
   // Calculate team statistics
@@ -240,7 +241,11 @@ const TeamPage = () => {
                     </div>
                     <div>
                       <p className="text-gray-500 text-xs mb-1">Member Since</p>
-                      <p className="text-sm">N/A</p>
+                      <p className="text-sm">
+                        {member.memberSince
+                          ? new Date(member.memberSince).toLocaleDateString()
+                          : "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>

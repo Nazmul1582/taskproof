@@ -50,9 +50,6 @@ const updateTaskSchema = z.object({
     .refine((date) => !isNaN(date.getTime()), {
       message: "Invalid date format",
     })
-    .refine((date) => date > new Date(), {
-      message: "Due date must be a future date",
-    })
     .optional(),
   priority: z.enum(["high", "medium", "low"]).optional(),
   status: z.enum(["todo", "in_progress", "completed"]).optional(),

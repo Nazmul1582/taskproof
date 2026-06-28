@@ -100,7 +100,7 @@ const getWorkload = async (req, res) => {
   let users = [];
 
   if (req.user.role === "admin" || req.user.role === "project_manager") {
-    users = await User.find({}, "name email avatar role");
+    users = await User.find({}, "name email avatar role createdAt");
   } else {
     users = [req.user];
   }
@@ -116,6 +116,7 @@ const getWorkload = async (req, res) => {
     const pending = total - completed;
 
     memberWorkload.push({
+      memberSince: user.createdAt,
       memberId: user._id,
       memberName: user.name,
       email: user.email,
