@@ -16,6 +16,7 @@ const notificationSchema = new mongoose.Schema(
         "task_completed",
         "member_added",
         "deadline_reminder",
+        "new_comment",
       ],
       required: true,
     },

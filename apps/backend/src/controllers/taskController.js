@@ -346,6 +346,18 @@ const addComment = async (req, res) => {
     task.comments.push(comment);
     await task.save();
 
+    const isNotOwnComment =
+      task.createdBy.toString() !== req.user._id.toString();
+    if (isNotOwnComment) {
+      await Notification.create({
+        userId: task.createdBy,
+        title: "New Comment",
+        message: `${req.user.name} commented on task "${task.title}"`,
+        type: "new_comment",
+        relatedId: task._id,
+      });
+    }
+
     res.status(201).json({
       success: true,
       data: { comment: task.comments[task.comments.length - 1] },
