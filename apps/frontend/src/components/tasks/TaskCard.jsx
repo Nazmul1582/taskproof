@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Edit2,
   Trash2,
@@ -74,6 +75,7 @@ const TaskCard = ({
   isUpdatingStatus,
   canManage = true,
 }) => {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const isOverdue =
     new Date(task.dueDate) < new Date() && task.status !== "completed";
@@ -105,7 +107,16 @@ const TaskCard = ({
           {/* Title and Priority */}
           <div className="flex-1 min-w-0 order-1 sm:order-2">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h3 className="text-sm sm:text-base font-semibold break-words flex-1">
+              <h3
+                className={`text-sm sm:text-base font-semibold break-words flex-1 cursor-pointer ${
+                  task.status === "in_progress"
+                    ? "text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                    : task.status === "completed"
+                      ? "text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                      : "text-gray-900 hover:text-gray-700 dark:text-gray-100 dark:hover:text-gray-300"
+                }`}
+                onClick={() => navigate(`/tasks/${task._id}`)}
+              >
                 {task.title}
               </h3>
               <PriorityBadge priority={task.priority} />
