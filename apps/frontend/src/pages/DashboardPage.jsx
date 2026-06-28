@@ -305,7 +305,7 @@ const Dashboard = () => {
             <Clock className="w-5 h-5" />
             Recent Activities
           </h2>
-          <div className="space-y-3 max-h-96 overflow-y-auto dark:scrollbar-thumb-gray-700">
+          <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
             {activities?.activities?.slice(0, 5).map((activity) => (
               <div
                 key={activity._id}
@@ -336,7 +336,7 @@ const Dashboard = () => {
             <Calendar className="w-5 h-5" />
             Upcoming Deadlines
           </h2>
-          <div className="space-y-3 max-h-96 overflow-y-auto dark:scrollbar-thumb-gray-700">
+          <div className="space-y-3 max-h-96 overflow-y-auto scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
             {upcoming?.upcomingDeadlines?.map((task) => (
               <div
                 key={task._id}

@@ -1,10 +1,17 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+const getDefaultTheme = () => {
+  if (typeof window !== "undefined") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return "dark";
+};
+
 const useUIStore = create(
   persist(
     (set) => ({
-      theme: "dark",
+      theme: getDefaultTheme(),
       sidebarOpen: true,
       modalOpen: null,
 
@@ -48,13 +55,18 @@ if (typeof window !== "undefined") {
       const parsed = JSON.parse(savedTheme);
       if (parsed.state.theme === "dark") {
         document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
       }
       // eslint-disable-next-line no-unused-vars
     } catch (e) {
       /* empty */
     }
   } else {
-    document.documentElement.classList.add("dark");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) {
+      document.documentElement.classList.add("dark");
+    }
   }
 }
 
