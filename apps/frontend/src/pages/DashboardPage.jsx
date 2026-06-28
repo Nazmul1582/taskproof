@@ -241,7 +241,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {workload?.memberWorkload?.map((member) => (
+              {[...(workload?.memberWorkload || [])].sort((a, b) => b.total - a.total).map((member) => (
                 <tr
                   key={member.memberId}
                   className="border-b border-gray-300 dark:border-gray-700"
