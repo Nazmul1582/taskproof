@@ -11,8 +11,10 @@ import {
   ChevronUp,
 } from "lucide-react";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import { useAuthStore } from "../store/authStore";
 
 const TeamPage = () => {
+  const { user } = useAuthStore();
   const [search, setSearch] = useState("");
   const [expandedMember, setExpandedMember] = useState(null);
 
@@ -269,7 +271,7 @@ const TeamPage = () => {
       </div>
 
       {/* Team Insights */}
-      {filteredMembers.length > 0 && (
+      {user?.role !== "team_member" && filteredMembers.length > 0 && (
         <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 rounded-lg p-4 sm:p-6">
           <h3 className="text-sm sm:text-base font-semibold mb-3">
             Team Insights

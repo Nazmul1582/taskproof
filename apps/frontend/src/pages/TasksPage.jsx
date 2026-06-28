@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useDebounce from "../hooks/useDebounce";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskService, projectService } from "../services/api";
 import { Search, Filter, X, Plus } from "lucide-react";
@@ -15,6 +16,7 @@ const TasksPage = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search);
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [projectFilter, setProjectFilter] = useState("");
@@ -34,7 +36,7 @@ const TasksPage = () => {
   // Build query params - only include filters that have values
   const queryParams = {
     page,
-    search: search || undefined,
+    search: debouncedSearch || undefined,
   };
   if (statusFilter && statusFilter !== "") queryParams.status = statusFilter;
   if (priorityFilter && priorityFilter !== "")

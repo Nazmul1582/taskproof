@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useDebounce from "../hooks/useDebounce";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "../services/api";
 import { Plus, Search, Edit2, Trash2, Eye, Filter } from "lucide-react";
@@ -16,6 +17,7 @@ const ProjectsPage = () => {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search);
   const [statusFilter, setStatusFilter] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
@@ -24,7 +26,7 @@ const ProjectsPage = () => {
 
   const queryParams = {
     page,
-    search,
+    search: debouncedSearch,
   };
   if (statusFilter && statusFilter !== "") {
     queryParams.status = statusFilter;
