@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,6 +28,7 @@ const TaskForm = ({
   isLoading,
 }) => {
   const [teamMembers, setTeamMembers] = useState(initialTeamMembers || []);
+  const [duplicateTitle, setDuplicateTitle] = useState("");
 
   const {
     register,
@@ -73,10 +74,11 @@ const TaskForm = ({
 
   // Fetch team members when project is selected
   const { data: projectData, isLoading: projectLoading } = useQuery({
-    queryKey: ["project-team-members", watchProjectId],
+    queryKey: ["project", watchProjectId],
     queryFn: () =>
       projectService.getProject(watchProjectId).then((res) => res.data.data),
     enabled: !!watchProjectId && watchProjectId !== "",
+    staleTime: 0,
   });
 
   // Load team members when project changes
@@ -100,6 +102,25 @@ const TaskForm = ({
     }
   }, [teamMembers]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Duplicate title detection
+  const watchTitle = watch("title");
+  const existingTitles = useMemo(
+    () =>
+      projectData?.tasks
+        ?.filter((t) => t._id !== initialData?._id)
+        .map((t) => t.title.toLowerCase()) || [],
+    [projectData?.tasks, initialData?._id],
+  );
+
+  useEffect(() => {
+    if (watchTitle && watchProjectId && existingTitles.length > 0) {
+      const isDuplicate = existingTitles.includes(watchTitle.toLowerCase());
+      setDuplicateTitle(isDuplicate ? watchTitle : "");
+    } else {
+      setDuplicateTitle("");
+    }
+  }, [watchTitle, watchProjectId, existingTitles]);
+
   if (projectsLoading) {
     return (
       <div className="py-8 text-center">
@@ -111,7 +132,7 @@ const TaskForm = ({
   const projects = projectsData?.projects || [];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit((data) => !duplicateTitle && onSubmit(data))} className="space-y-4">
       <div>
         <label className="block text-sm font-medium mb-1">Task Title *</label>
         <input
@@ -122,6 +143,11 @@ const TaskForm = ({
         {errors.title && (
           <p className="text-red-500 dark:text-red-400 text-sm mt-1">
             {errors.title.message}
+          </p>
+        )}
+        {duplicateTitle && (
+          <p className="text-red-500 dark:text-red-400 text-sm mt-1">
+            A task with this title already exists in this project.
           </p>
         )}
       </div>
@@ -236,14 +262,16 @@ const TaskForm = ({
       <div className="flex flex-col sm:flex-row gap-3 pt-4">
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !!duplicateTitle}
           className="btn-primary flex-1 py-2.5 md:cursor-pointer"
         >
           {isLoading
             ? "Saving..."
-            : initialData
-              ? "Update Task"
-              : "Create Task"}
+            : duplicateTitle
+              ? "Duplicate Title"
+              : initialData
+                ? "Update Task"
+                : "Create Task"}
         </button>
         <button
           type="button"
